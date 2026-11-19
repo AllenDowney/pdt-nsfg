@@ -23,7 +23,7 @@ Dimensions: `wave` is the cycle.
 
 Every shard is the result of a filter over the records, and its header says which filter and what completeness label it supports. Each shard comes in two forms with the same variables: `.txt`, one line per variable, for scanning; and `.jsonl`, the full records with corrections applied, for details. The first JSONL line is the shard's header (`{"shard": ...}`); every later line is a variable. A shard too big to read at once (about 20,000 tokens) is split into parts.
 
-Line form: `name | waves; forms | scale signature | label | question text`. Wave runs like `1972-1978` follow the waves present in the release, so a run skips years with no survey. A trailing `*` on a name means a field was corrected.
+Line form: `name | waves; forms | scale signature | label | question text`. A run like `1972-1978` means every wave of the release in that span; a gap between runs (`1972-1985,1987-2024`) means the variable wasn't available in the waves between, even though the release has them. The release's waves are: `2022-2023`: 2022-2023. `forms A,C` lists every form the variable was on in any wave; the JSONL `availability` gives wave by form. A trailing `*` on a name means a field was corrected.
 
 Read `SKILL.md` before answering a question from these files.
 

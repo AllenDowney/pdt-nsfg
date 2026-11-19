@@ -32,15 +32,17 @@ judgment, the result is `approximate`.
 With every result, give what's needed to rerun it: the release(s) in scope, the number of
 variables in scope, the filter (from the shard header), and the rule versions.
 
-A `complete` result is complete with respect to the recorded metadata. Publisher-subject
-shards are complete with respect to the publisher's subject list, which may miss items a
-reader would consider on-topic. Say so when it matters.
+A `complete` result is complete with respect to the records in scope: if the repo covers
+part of a release, say so, using the scope in the shard header. Subject shards are complete
+with respect to the publisher's own subject list, which may miss items a reader would
+consider on-topic; say so when it matters. If a subject shard and a group shard give the
+same variables, prefer the one with the better label and cite it.
 
 ## Searching with code
 
 If the shared library is installed, `pdt search PATH --filter '<json>'` runs a filter and
-prints a labeled result, e.g. `--filter '{"topic": "Abortion"}'`. Filter keys: `release`,
-`table`, `name`, `group`, `topic`, `derived`, `field`, `text`.
+prints a labeled result, e.g. `--filter '{"subject": "Abortion"}'`. Filter keys: `release`,
+`table`, `name`, `group`, `subject`, `topic`, `derived`, `field`, `text`.
 
 ## Rules
 
