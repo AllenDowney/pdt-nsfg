@@ -8,7 +8,7 @@ PDT ?= ../PublicDataToolkit
 build:
 	$(PYTHON) build/build_slice.py
 
-## Generate agent/ from the records (pdt views)
+## Generate agent/ and docs/ from the records (pdt views)
 views:
 	PYTHONPATH=$(PDT)/lib $(PYTHON) -m pdt views .
 
