@@ -309,8 +309,11 @@ def build_variable(name, rel, rspec, measure, entry, col, table, codebook_src, d
             if code == "." :
                 report.append(f"`{name}`: '.' labeled {row_label!r}, not recognized as missing")
     if ranges:
-        lows = [float(t.split("-")[0]) for _, t, _ in entry["rows"] if re.search(r"\d-", t)]
-        highs = [float(re.split(r"(?<=\d)-", t, maxsplit=1)[1]) for _, t, _ in entry["rows"] if re.search(r"\d-", t)]
+        # The range spans the range rows and any single valid codes beside them
+        # (2017-2019 age_r lists 15 to 48 singly, then "49-50").
+        singles = [float(v["code"]) for v in values if v["kind"] == "valid" and v["code"] != "."]
+        lows = [float(t.split("-")[0]) for _, t, _ in entry["rows"] if re.search(r"\d-", t)] + singles
+        highs = [float(re.split(r"(?<=\d)-", t, maxsplit=1)[1]) for _, t, _ in entry["rows"] if re.search(r"\d-", t)] + singles
         record["valid_range"] = {"min": min(lows), "max": max(highs),
                                  "note": "From the distribution in the codebook, which rounds it."}
         record["valid_range"] = {k: (int(v) if isinstance(v, float) and v.is_integer() else v)
