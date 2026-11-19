@@ -2,7 +2,7 @@
 
 Metadata for the [National Survey of Family Growth](https://www.cdc.gov/nchs/nsfg/) (NSFG), built to the [PublicDataToolkit](https://github.com/AllenDowney/PublicDataToolkit) standard.
 
-**Status:** preliminary. A 23-variable slice of the 2022-2023 (cycle 12) female respondent file.
+**Status:** preliminary. A 52-variable slice of the 2022-2023 (cycle 12) release, in three tables: female respondents (23 variables), male respondents (17) and pregnancies (12).
 
 ## What the dataset is
 
@@ -18,7 +18,8 @@ The files are on the CDC FTP site; [`sources.yaml`](sources.yaml) lists them wit
 
 ## The metadata
 
-- [`metadata/releases/2022-2023/variables.jsonl`](metadata/releases/2022-2023/variables.jsonl): one record per variable: label, universe, notes, codes (with refused, don't know and inapplicable typed by rule, since the codebook doesn't mark them), counts, and where each fact came from.
+- `metadata/releases/2022-2023/<table>/variables.jsonl`, for [`female`](metadata/releases/2022-2023/female/variables.jsonl), [`male`](metadata/releases/2022-2023/male/variables.jsonl) and [`pregnancy`](metadata/releases/2022-2023/pregnancy/variables.jsonl): one record per variable, with label, universe, notes, codes, counts, and where each fact came from. Refused, don't know and inapplicable are typed by a rule, since the codebook doesn't mark them.
+- [`dataset.yaml`](dataset.yaml) declares the tables, their keys (`CaseID`; `CaseID` and `PREGORDR`), and that each pregnancy's `CaseID` refers to a female respondent.
 
 ## How to cite
 

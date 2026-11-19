@@ -1,22 +1,41 @@
-# The snake_case slice of the NSFG (PublicDataToolkit Task 5, preliminary).
-# Female respondent file only: the standard has no level for several files in
-# one release (see the PublicDataToolkit board).
+# The snake_case slice of the NSFG (PublicDataToolkit Task 5).
+# Release 2022-2023 (cycle 12), three tables. Hand-entered facts are recorded
+# with origin: hand.
 
 release: "2022-2023"
 author: Allen Downey
 date: "2026-11-19"
 
-variables:
-  design: [CaseID, WGT2022_2023, VEST, AGE_R, RSCRAGE, HISPRACE2, HIEDUC, HIEDUC_I]
-  marital: [MARSTAT, LMARSTAT, EVRMARRY, FMARITAL, RMARITAL, FMARIT, RMARIT, SSMARCOH, CURRPRTS]
-  religion: [RELIGION, ATTND14, RELDLIFE, ATTNDNOW]
-  other: [POT12, SAMLIFENUM]
+tables:
+  female:
+    codebook: {source: nsfg-female-codebook, path: 2022-2023-FemResp-Codebook.txt}
+    data: {source: nsfg-female-sas, path: NSFG-2022-2023-FemRespPUFData.sas7bdat}
+    variables:
+      design: [CaseID, WGT2022_2023, VEST, AGE_R, RSCRAGE, HISPRACE2, HIEDUC, HIEDUC_I]
+      marital: [MARSTAT, LMARSTAT, EVRMARRY, FMARITAL, RMARITAL, FMARIT, RMARIT, SSMARCOH, CURRPRTS]
+      religion: [RELIGION, ATTND14, RELDLIFE, ATTNDNOW]
+      other: [POT12, SAMLIFENUM]
+  male:
+    codebook: {source: nsfg-male-codebook, path: 2022-2023-Male-Codebook.txt}
+    data: {source: nsfg-male-sas, path: NSFG-2022-2023-MaleRespPUFData.sas7bdat}
+    variables:
+      design: [CaseID, WGT2022_2023, VEST, AGE_R, HISPRACE2, HIEDUC]
+      marital: [MARSTAT, LMARSTAT, EVRMARRY, FMARITAL, RMARITAL]
+      religion: [RELIGION, ATTND14, RELDLIFE, ATTNDNOW]
+      other: [POT12, MFLASTP]
+  pregnancy:
+    codebook: {source: nsfg-pregnancy-codebook, path: 2022-2023-FemPreg-Codebook.txt}
+    data: {source: nsfg-pregnancy-sas, path: NSFG-2022-2023-FemPregPUFData.sas7bdat}
+    variables:
+      keys: [CaseID, PREGORDR]
+      outcome: [OUTCOME, OUTCOME_I, BIRTHORD, BABYSEX, BIRTHWGT, agepreg, pmarpreg]
+      design: [WGT2022_2023, VEST, RELIGION]
 
 measure:
-  identifier: [CaseID]
+  identifier: [CaseID, PREGORDR]
   weight: [WGT2022_2023]
-  continuous: [AGE_R, RSCRAGE]
-  count: [SAMLIFENUM, CURRPRTS]
+  continuous: [AGE_R, RSCRAGE, agepreg, BIRTHWGT]
+  count: [SAMLIFENUM, CURRPRTS, BIRTHORD]
   ordinal: [HIEDUC, ATTND14, RELDLIFE, ATTNDNOW, POT12]
-  categorical: [VEST, HISPRACE2, HIEDUC_I, MARSTAT, LMARSTAT, EVRMARRY, FMARITAL, RMARITAL,
-                FMARIT, RMARIT, SSMARCOH, RELIGION]
+  categorical: [MFLASTP, VEST, HISPRACE2, HIEDUC_I, MARSTAT, LMARSTAT, EVRMARRY, FMARITAL, RMARITAL,
+                FMARIT, RMARIT, SSMARCOH, RELIGION, OUTCOME, OUTCOME_I, BABYSEX, pmarpreg]

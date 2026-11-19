@@ -32,8 +32,6 @@ ROOT = Path(__file__).resolve().parent.parent
 RAW = ROOT / "data" / "raw"
 META = ROOT / "metadata"
 
-CODEBOOK = "nsfg-femresp-codebook"
-DATA = "nsfg-femresp-sas"
 RULE_VERSION = "0.1"
 
 # ---------------------------------------------------------------- codebook
@@ -45,13 +43,36 @@ DIST_HEADER = re.compile(r"^([A-Za-z][A-Za-z0-9_]*): Distribution\s+Value\s+n\s*
 DIST_ROW = re.compile(r"^(.*?)\s{2,}(-?\d+(?:\.\d+)?(?:\s*-\s*-?\d+(?:\.\d+)?)?|\.)\s+(\d+)\s*$")
 TOTAL_ROW = re.compile(r"^\s+\d+\s*$")
 PAGE_NOISE = re.compile(r"^(Section [A-Z]+|\f.*)$")
+# A box in the page margin, which `pdftotext -layout` puts on the same lines as
+# the entry: text after 20 or more spaces, starting at column 110 or later. The
+# only one in the 2022-2023 codebooks is NCHS's "Corrected universe for MFLASTP".
+MARGIN = re.compile(r"(?<=\S) {20,}(?=\S)")
+
+
+def split_margin(line):
+    """Return (main text, margin text or None)."""
+    only = re.match(r"^ {100,}(\S.*)$", line)
+    if only:
+        return "", only.group(1).strip()
+    for m in MARGIN.finditer(line):
+        if m.end() >= 110:
+            return line[:m.start()], line[m.end():].strip()
+    return line, None
 
 
 def parse_codebook(path, wanted):
     """Return {NAME: {fields..., "rows": [(label, value token, n)]}} for the wanted names."""
     wanted_upper = {w.upper() for w in wanted}
     entries, current, field, in_dist = {}, None, None, False
-    for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
+    margin_for = None  # the entry a margin box belongs to
+    for raw_line in path.read_text(encoding="utf-8", errors="replace").splitlines():
+        line, margin = split_margin(raw_line)
+        if margin:
+            m = re.match(r"^([A-Za-z][A-Za-z0-9_]*)\b", line.strip())
+            if m and m.group(1).upper() in wanted_upper:
+                margin_for = m.group(1).upper()
+            if margin_for:
+                entries.setdefault(margin_for, {"rows": []}).setdefault("margin", []).append(margin)
         if PAGE_NOISE.match(line):
             continue
         m = DIST_HEADER.match(line)
@@ -75,9 +96,9 @@ def parse_codebook(path, wanted):
             name = m.group(1).upper()
             if current is not None and entries.get(name) is current:
                 continue  # after a page break the PDF repeats the variable's name as a header
-            current = {"rows": []} if name in wanted_upper else None
-            if current is not None:
-                entries[name] = current
+            if name != margin_for:
+                margin_for = None  # a margin box ends where the next variable begins
+            current = entries.setdefault(name, {"rows": []}) if name in wanted_upper else None
             field = None
             continue
         if current is None:
@@ -115,17 +136,21 @@ def missing_types(label):
 
 
 def load_slice():
+    """Return (spec, {table: [names]}, measure). Names may repeat across tables, not within one."""
     spec = yaml.safe_load((ROOT / "build" / "slice.yaml").read_text())
-    names = [n for group in spec["variables"].values() for n in group]
-    assert len(names) == len(set(names)), "duplicate names in slice.yaml"
+    names = {}
+    for table, t in spec["tables"].items():
+        names[table] = [n for group in t["variables"].values() for n in group]
+        assert len(names[table]) == len(set(names[table])), f"duplicate names in table {table}"
     measure = {n: m for m, ns in spec["measure"].items() for n in ns}
     return spec, names, measure
 
 
-def build_variable(name, spec, measure, entry, col):
+def build_variable(name, spec, measure, entry, col, table, CODEBOOK, DATA):
+    """One record. CODEBOOK and DATA are this table's source ids in sources.yaml."""
     report = []
     hand = {"origin": "hand", "author": spec["author"], "date": spec["date"]}
-    record = {"dataset": "nsfg", "release": spec["release"], "name": name}
+    record = {"dataset": "nsfg", "release": spec["release"], "table": table, "name": name}
     label = entry.get("label", "")
     item = ITEM.match(label)
     if label:
@@ -140,6 +165,11 @@ def build_variable(name, spec, measure, entry, col):
         record["universe"] = entry["universe"]
     if entry.get("notes"):
         record["notes"] = entry["notes"]
+    if entry.get("margin"):
+        # NCHS's own correction, printed in the page margin; kept verbatim and labeled.
+        margin = "Codebook margin note: " + " ".join(entry["margin"])
+        record["notes"] = (record["notes"] + "\n" if "notes" in record else "") + margin
+        report.append(f"`{name}`: has a margin note in the codebook: {' '.join(entry['margin'])[:100]}")
 
     values, documented, ranges, n_valid = [], set(), [], 0
     for row_label, token, n in entry.get("rows", []):
@@ -224,49 +254,67 @@ def build_variable(name, spec, measure, entry, col):
     return record, report
 
 
-def main():
-    spec, names, measure = load_slice()
-    codebook = parse_codebook(RAW / "2022-2023-FemResp-Codebook.txt", names)
-    frame = pd.read_sas(RAW / "NSFG-2022-2023-FemRespPUFData.sas7bdat", format="sas7bdat", encoding="latin-1")
+def build_table(spec, table, names, measure):
+    """Build one table's records; return (records, notes, summary line)."""
+    t = spec["tables"][table]
+    codebook_path, data_path = RAW / t["codebook"]["path"], RAW / t["data"]["path"]
+    codebook = parse_codebook(codebook_path, names)
+    frame = pd.read_sas(data_path, format="sas7bdat", encoding="latin-1")
     upper = {c.upper(): c for c in frame.columns}
-
     records, notes = [], []
     for name in names:
         entry = codebook.get(name.upper())
         if entry is None:
-            notes.append(f"`{name}`: not found in the codebook")
+            notes.append(f"`{table}/{name}`: not found in the codebook")
             entry = {"rows": []}
         if name not in frame.columns:
-            notes.append(f"`{name}`: not in the data (as {upper.get(name.upper())!r})")
+            notes.append(f"`{table}/{name}`: not in the data (as {upper.get(name.upper())!r})")
         if name.upper() != name and name.upper() in codebook:
-            notes.append(f"`{name}`: the codebook writes it as {name.upper()}")
-        record, report = build_variable(name, spec, measure, entry, frame[upper[name.upper()]])
+            notes.append(f"`{table}/{name}`: the codebook writes it as {name.upper()}")
+        record, report = build_variable(name, spec, measure, entry, frame[upper[name.upper()]], table,
+                                        t["codebook"]["source"], t["data"]["source"])
         records.append(record)
-        notes.extend(report)
-
+        notes.extend(f"`{table}/{n[1:]}" if n.startswith("`") else n for n in report)
     # Coverage (C3) for the whole file: codebook entries vs data columns.
-    all_codebook = parse_codebook(RAW / "2022-2023-FemResp-Codebook.txt", list(upper))
+    all_codebook = parse_codebook(codebook_path, list(upper))
     only_data = sorted(set(upper) - set(all_codebook))
-    write_jsonl(META / "releases" / spec["release"] / "variables.jsonl", records)
-    signatures = [{"target": {"variable": r["name"]}, "property": "scale_signature",
+    summary = (f"- `{table}`: {len(records)} variables in the slice; data file has {len(upper)} columns, "
+               f"codebook entries found for {len(all_codebook)}; in the data but not the codebook: {only_data[:10] or 'none'}")
+    return records, notes, summary
+
+
+def main():
+    spec, names, measure = load_slice()
+    release_dir = META / "releases" / spec["release"]
+    old = release_dir / "variables.jsonl"
+    if old.exists():
+        old.unlink()  # from before the release had tables
+    all_records, notes, summaries = [], [], []
+    for table in spec["tables"]:
+        records, table_notes, summary = build_table(spec, table, names[table], measure)
+        write_jsonl(release_dir / table / "variables.jsonl", records)
+        all_records += records
+        notes += table_notes
+        summaries.append(summary)
+
+    signatures = [{"target": {"variable": r["name"], "table": r["table"]}, "property": "scale_signature",
                    "value": SCALE_SIGNATURES[labels], "rule": "scale_signature_from_valid_labels",
                    "rule_version": RULE_VERSION}
-                  for r in records
+                  for r in all_records
                   if (labels := tuple(v["label"] for v in r.get("values", []) if v["kind"] == "valid")) in SCALE_SIGNATURES]
     write_jsonl(META / "derived" / "scale_signature.jsonl", signatures)
 
-    types = collections.Counter(t for r in records for v in r.get("values", []) if v["kind"] == "missing"
+    types = collections.Counter(t for r in all_records for v in r.get("values", []) if v["kind"] == "missing"
                                 for t in v["missing_types"])
     lines = [
-        f"# Build report: NSFG slice, release {spec['release']} (female respondent file)",
+        f"# Build report: NSFG slice, release {spec['release']}",
         "",
         "Generated by `build/build_slice.py`. Do not edit.",
         "",
-        f"- Variables: {len(records)}",
-        f"- Data file columns: {len(upper)}; codebook entries found for {len(all_codebook)}; "
-        f"in the data but not the codebook: {only_data[:10] or 'none'}",
-        f"- With a questionnaire item in the label: {sum('item' in r.get('extensions', {}).get('nsfg', {}) for r in records)}",
-        f"- Unresolved codes: {sum(v['kind'] == 'unresolved' for r in records for v in r.get('values', []))}",
+        *summaries,
+        f"- With a questionnaire item in the label: "
+        f"{sum('item' in r.get('extensions', {}).get('nsfg', {}) for r in all_records)} of {len(all_records)}",
+        f"- Unresolved codes: {sum(v['kind'] == 'unresolved' for r in all_records for v in r.get('values', []))}",
         f"- Scale signatures: {len(signatures)}",
         "",
         "## Missing types assigned, by number of codes",
@@ -281,7 +329,7 @@ def main():
         "",
     ]
     (ROOT / "build" / "report.md").write_text("\n".join(lines))
-    print(f"{len(records)} variables; see build/report.md")
+    print(f"{len(all_records)} variables in {len(spec['tables'])} tables; see build/report.md")
 
 
 def write_jsonl(path, records):

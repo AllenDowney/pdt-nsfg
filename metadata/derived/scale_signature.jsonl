@@ -1,0 +1,1 @@
+{"target": {"variable": "pmarpreg", "table": "pregnancy"}, "property": "scale_signature", "value": "yes_no", "rule": "scale_signature_from_valid_labels", "rule_version": "0.1"}

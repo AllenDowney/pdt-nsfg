@@ -1,5 +1,5 @@
 sources:
-  - id: nsfg-femresp-codebook
+  - id: nsfg-female-codebook
     title: 2022-2023 NSFG Female Respondent public-use codebook, as text
     kind: codebook
     format: text
@@ -14,11 +14,11 @@ sources:
     note: >
       Converted from the PDF with `pdftotext -layout` by MarriageNSFG's
       scripts/fetch_codebooks.py; the checksum is of the text.
-  - id: nsfg-femresp-sas
+  - id: nsfg-female-sas
     title: 2022-2023 NSFG Female Respondent public-use data, SAS
     kind: data
     format: sas7bdat
-    url: https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/NSFG/NSFG-2022-2023-FemRespPUFData.sas7bdat
+    url: https://ftp.cdc.gov/pub/Health_Statistics/NCHS/NSFG/NSFG-2022-2023-FemRespPUFData.sas7bdat
     path: data/raw/NSFG-2022-2023-FemRespPUFData.sas7bdat
     releases: ["2022-2023"]
     redistribution: ship
@@ -26,3 +26,53 @@ sources:
     fetched_on: "2024-12-11"
     sha256: a4666d3e35234cde35c17d411c665597b62e2c076c7c48c7a21b3bc49a343315
     bytes: 86384640
+  - id: nsfg-male-codebook
+    title: 2022-2023 NSFG Male Respondent public-use codebook, as text
+    kind: codebook
+    format: text
+    url: https://www.cdc.gov/nchs/data/nsfg/codebooks/2022-2023-NSFG-MalePUFCodebook.pdf
+    path: data/raw/2022-2023-Male-Codebook.txt
+    releases: ["2022-2023"]
+    redistribution: ship
+    acquisition: automated
+    fetched_on: "2026-09-20"
+    sha256: a8129e2af7e3330da58b629dc5414803676a71d216894eac48d7078a85d5a597
+    bytes: 1091536
+    note: Converted from the PDF with `pdftotext -layout`, as above.
+  - id: nsfg-male-sas
+    title: 2022-2023 NSFG Male Respondent public-use data, SAS
+    kind: data
+    format: sas7bdat
+    url: https://ftp.cdc.gov/pub/Health_Statistics/NCHS/NSFG/NSFG-2022-2023-MaleRespPUFData.sas7bdat
+    path: data/raw/NSFG-2022-2023-MaleRespPUFData.sas7bdat
+    releases: ["2022-2023"]
+    redistribution: ship
+    acquisition: automated
+    fetched_on: "2024-12-11"
+    sha256: 3262fd49174fbb834e0102f60e0aacfd9b069045f26ef808e3a2c9d76fa00c9e
+    bytes: 41287680
+  - id: nsfg-pregnancy-codebook
+    title: 2022-2023 NSFG Female Pregnancy public-use codebook, as text
+    kind: codebook
+    format: text
+    url: https://www.cdc.gov/nchs/data/nsfg/codebooks/2022-2023-NSFG-FemPregPUFCodebook.pdf
+    path: data/raw/2022-2023-FemPreg-Codebook.txt
+    releases: ["2022-2023"]
+    redistribution: ship
+    acquisition: automated
+    fetched_on: "2026-09-20"
+    sha256: 1bf5717488a76058e8c164f9f57f508a87df5c42e58b8b86248d07ae55be7e26
+    bytes: 113618
+    note: Converted from the PDF with `pdftotext -layout`, as above.
+  - id: nsfg-pregnancy-sas
+    title: 2022-2023 NSFG Female Pregnancy public-use data, SAS
+    kind: data
+    format: sas7bdat
+    url: https://ftp.cdc.gov/pub/Health_Statistics/NCHS/NSFG/NSFG-2022-2023-FemPregPUFData.sas7bdat
+    path: data/raw/NSFG-2022-2023-FemPregPUFData.sas7bdat
+    releases: ["2022-2023"]
+    redistribution: ship
+    acquisition: automated
+    fetched_on: "2026-11-19"
+    sha256: c55562924c1cf6c6f0be2b7cb264fd7febf5dbfd76bb024c6e3b63ab843bbac5
+    bytes: 7299072

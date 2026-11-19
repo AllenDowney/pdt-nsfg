@@ -37,6 +37,23 @@ dimensions:
     note: Cycle 12 is 2022-2023. Earlier cycles are 3 (1982) to 11 (2017-2019).
 releases:
   - id: "2022-2023"
-    label: NSFG 2022-2023 (cycle 12) public-use files, female respondent file
+    label: NSFG 2022-2023 (cycle 12) public-use files
     status: current
-    sources: [nsfg-femresp-codebook, nsfg-femresp-sas]
+    sources: [nsfg-female-codebook, nsfg-female-sas, nsfg-male-codebook, nsfg-male-sas,
+              nsfg-pregnancy-codebook, nsfg-pregnancy-sas]
+    tables:
+      - id: female
+        label: Female respondents
+        sources: [nsfg-female-codebook, nsfg-female-sas]
+        key: [CaseID]
+      - id: male
+        label: Male respondents
+        sources: [nsfg-male-codebook, nsfg-male-sas]
+        key: [CaseID]
+      - id: pregnancy
+        label: Pregnancies reported by female respondents
+        sources: [nsfg-pregnancy-codebook, nsfg-pregnancy-sas]
+        key: [CaseID, PREGORDR]
+        references:
+          - columns: [CaseID]
+            table: female
