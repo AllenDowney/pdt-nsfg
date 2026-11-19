@@ -31,12 +31,12 @@ Read `SKILL.md` before answering a question from these files.
 
 | Shard | Variables | Completeness | Tokens (txt / jsonl) | Basis |
 |---|---|---|---|---|
-| [Release 2022-2023, table female](shards/table/2022-2023-female.txt) | 23 | `complete` | 636 / 10,757 | every variable in the table |
-| [Release 2022-2023, table male](shards/table/2022-2023-male.txt) | 17 | `complete` | 464 / 8,079 | every variable in the table |
-| [Release 2022-2023, table pregnancy](shards/table/2022-2023-pregnancy.txt) | 12 | `complete` | 348 / 5,135 | every variable in the table |
+| [Release 2022-2023, table female](shards/table/2022-2023-female.txt) | 23 | `complete` | 882 / 10,757 | every variable in the table |
+| [Release 2022-2023, table male](shards/table/2022-2023-male.txt) | 17 | `complete` | 693 / 8,079 | every variable in the table |
+| [Release 2022-2023, table pregnancy](shards/table/2022-2023-pregnancy.txt) | 12 | `complete` | 423 / 5,135 | every variable in the table |
 
 ## By scale signature
 
 | Shard | Variables | Completeness | Tokens (txt / jsonl) | Basis |
 |---|---|---|---|---|
-| [Scale signature: yes_no](shards/scale/yes-no.txt) | 1 | `complete_by_rule` | 147 / 527 | variables with this scale signature |
+| [Scale signature: yes_no](shards/scale/yes-no.txt) | 1 | `complete_by_rule` | 150 / 527 | variables with this scale signature |

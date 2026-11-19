@@ -31,7 +31,7 @@
      "path": "shards/table/2022-2023-female.txt",
      "form": "txt",
      "variables": 23,
-     "tokens": 636
+     "tokens": 882
     }
    ]
   },
@@ -62,7 +62,7 @@
      "path": "shards/table/2022-2023-male.txt",
      "form": "txt",
      "variables": 17,
-     "tokens": 464
+     "tokens": 693
     }
    ]
   },
@@ -93,7 +93,7 @@
      "path": "shards/table/2022-2023-pregnancy.txt",
      "form": "txt",
      "variables": 12,
-     "tokens": 348
+     "tokens": 423
     }
    ]
   },
@@ -127,7 +127,7 @@
      "path": "shards/scale/yes-no.txt",
      "form": "txt",
      "variables": 1,
-     "tokens": 147
+     "tokens": 150
     }
    ]
   }
