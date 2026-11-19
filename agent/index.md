@@ -25,20 +25,20 @@ Every shard is the result of a filter over the records, and its header says whic
 
 The JSONL records are compact: `availability` maps each form (or `all`) to runs of waves, `origins` gives where each field came from as `kind:source` or `rule:name@version`, and `origins.codes` is the origin the codes share (a code lists its own when they differ). Per-wave counts and the notes on origins are left out. The full records in `metadata/` are canonical; each shard header's `full_records` names the files.
 
-Line form: `name | waves; forms | scale signature | label | question text`. A run like `1972-1978` means every wave of the release in that span; a gap between runs (`1972-1985,1987-2024`) means the variable wasn't available in the waves between, even though the release has them. The release's waves are: `2022-2023`: 2022-2023. `forms A,C` lists every form the variable was on in any wave; the JSONL `availability` gives wave by form. A trailing `*` on a name means a field was corrected.
+Line form: `name | waves by form | scale signature | label | question text`. A run like `1972-1978` means every wave of the release in that span. `1972-1985,1987-2024 (not 1986)` means the release has a 1986 wave and the variable wasn't in it. `all 1972-1987; form A,C 1988-2024` means everyone was asked through 1987 and only forms A and C from 1988. The release's waves are: `2022-2023`: 2022-2023. A trailing `*` on a name means a field was corrected.
 
-Read `SKILL.md` before answering a question from these files.
+`SKILL.md` says how to label an answer drawn from these files.
 
 ## By release and table
 
 | Shard | Variables | Completeness | Tokens (txt / jsonl) | Basis |
 |---|---|---|---|---|
-| [Release 2022-2023, table female](shards/table/2022-2023-female.txt) | 23 | `complete` | 887 / 7,272 | every variable in the table |
-| [Release 2022-2023, table male](shards/table/2022-2023-male.txt) | 17 | `complete` | 680 / 5,413 | every variable in the table |
-| [Release 2022-2023, table pregnancy](shards/table/2022-2023-pregnancy.txt) | 12 | `complete` | 428 / 3,319 | every variable in the table |
+| [Release 2022-2023, table female](shards/table/2022-2023-female.txt) | 23 | `complete` | 896 / 7,272 | every variable in the table |
+| [Release 2022-2023, table male](shards/table/2022-2023-male.txt) | 17 | `complete` | 689 / 5,413 | every variable in the table |
+| [Release 2022-2023, table pregnancy](shards/table/2022-2023-pregnancy.txt) | 12 | `complete` | 437 / 3,319 | every variable in the table |
 
 ## By scale signature
 
 | Shard | Variables | Completeness | Tokens (txt / jsonl) | Basis |
 |---|---|---|---|---|
-| [Scale signature: yes_no](shards/scale/yes-no.txt) | 1 | `complete_by_rule` | 155 / 386 | variables with this scale signature |
+| [Scale signature: yes_no](shards/scale/yes-no.txt) | 1 | `complete_by_rule` | 164 / 386 | variables with this scale signature |
