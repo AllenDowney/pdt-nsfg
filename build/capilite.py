@@ -11,7 +11,8 @@ Rule nsfg_capilite_text. In the CAPI-lite format each question is a block:
 
 When the wording depends on a condition, the block has several wordings, each
 after a line like "IF ANY RELAR[X]=1 and SEX[X]=1, ASK:" or "ELSE ASK:". Each
-becomes one question, with the condition in its note. Lines entirely in
+becomes one question, with the condition as printed ("IF ANY RELAR[X]=1 and
+SEX[X]=1", "ELSE") in `condition` (STANDARD.md §4.1). Lines entirely in
 capitals ("SELECT ALL THAT APPLY."), or marked with a symbol-font glyph (a
 private-use character in the text), are interviewer instructions; they go in
 `instructions` and stay out of `text`. Layout line breaks are removed.
@@ -23,13 +24,15 @@ source locations.
 import re
 
 RULE = "nsfg_capilite_text"
-RULE_VERSION = "0.1"
+RULE_VERSION = "0.2"  # 0.2: the condition goes in `condition`, as printed
 
 NAME = re.compile(r"^([A-Z][A-Z0-9_]*)(\[X\])?\s*$")
 ITEM = re.compile(r"^([A-Z]{1,3}-\d+[a-z]?)\.\s*(.*)$")
 PAGE_NOISE = re.compile(r"^\s*(NSFG-2022-2023-Capilite-\w+|Page \d+ of \d+|NSFG (Fe)?[Mm]ale CAPI-lite for .*|OMB Number .*)\s*$")
 OPTION = re.compile(r"\.{3,}\s*\d+\s*$|\.\s*\d+\s*$")
-CONDITION = re.compile(r"^(?:ELSE\s*,?\s*)?(?:(IF .*?)\s*,?\s*(?:THEN\s+)?)?ASK:\s*$", re.IGNORECASE)
+# "IF ANY RELAR[X]=1 and SEX[X]=1, ASK:", "ELSE IF ..., THEN ASK:", "ELSE ASK:", "ELSE, ASK:"; group 1 is
+# the condition as printed, without the trailing ASK.
+CONDITION = re.compile(r"^((?:ELSE\b)?\s*,?\s*(?:IF .*?)?)\s*,?\s*(?:THEN\s+)?ASK:\s*$", re.IGNORECASE)
 ENDS = ("[HELP AVAILABLE]", "{", "[IF ", "FLOW CHECK")
 
 
@@ -92,7 +95,7 @@ def split_wordings(body):
             if instructions:
                 q["instructions"] = unwrap(instructions)
             if condition:
-                q["note"] = f"Asked when: {condition}"
+                q["condition"] = condition
             wordings.append(q)
 
     for line in body:
@@ -102,7 +105,7 @@ def split_wordings(body):
         m = CONDITION.match(s)
         if m:
             close()
-            condition = m.group(1) or ("otherwise" if wordings else None)
+            condition = re.sub(r"\s+", " ", m.group(1).strip(" ,")) or None
             text, instructions = [], []
         elif is_instruction(s):
             instructions.append(s)

@@ -28,7 +28,8 @@ HEADER = re.compile(r"^\s*([A-Za-z][A-Za-z0-9_]*)[({]\s*[^(){}\s]+\s*-\s*[^(){}\
 # The colon is sometimes missing ("Description          R's age at interview").
 FIELD = re.compile(r"^\s*(Variable Type|Description|Universe|Notes)(?:\s*:\s*|\s{2,})(.*)$")
 ITEM = re.compile(r"^\s*([A-Z]{1,3}-\d+[a-z]?)\s*:\s*(.*)$")
-TABLE_HEAD = re.compile(r"^\s*value\s+label\s+Total\s*$")
+# OCR sometimes reads the table's borders as "I" or "|" ("I   value label   Total   I").
+TABLE_HEAD = re.compile(r"^\s*[I|]?\s*value\s+label\s+Total\s*[I|]?\s*$")
 TOTAL = re.compile(r"^\s*Total\s+\d+\s*$")
 ROW = re.compile(r"^\s*(-?\d+(?:\.\d+)?(?:-\d+(?:\.\d+)?)?|\.)?\s+(.*?)\s{2,}(\d+)\s*$")
 NOISE = re.compile(r"^\s*(\d+/\d+/\d{4}\s+National Survey of Family Growth.*|National Survey of Family Growth, \d{4}-\d{4}.*"

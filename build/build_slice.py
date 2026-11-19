@@ -58,7 +58,7 @@ RAW = ROOT / "data" / "raw"
 META = ROOT / "metadata"
 
 RULE_VERSION = "0.1"
-LINK_RULE, LINK_RULE_VERSION = "nsfg_identical_documentation", "0.1"
+LINK_RULE, LINK_RULE_VERSION = "nsfg_identical_documentation", "0.2"
 CHANGES_SOURCE = "nsfg-2022-2023-quex-changes"
 
 
@@ -314,11 +314,17 @@ def build_variable(name, rel, rspec, measure, entry, col, table, codebook_src, d
         singles = [float(v["code"]) for v in values if v["kind"] == "valid" and v["code"] != "."]
         lows = [float(t.split("-")[0]) for _, t, _ in entry["rows"] if re.search(r"\d-", t)] + singles
         highs = [float(re.split(r"(?<=\d)-", t, maxsplit=1)[1]) for _, t, _ in entry["rows"] if re.search(r"\d-", t)] + singles
+        # Labeled ranges ("0-19  Under 20 years") keep their labels in the note, as pdt-fars does.
+        labeled = [f"{t}: {lab}" for lab, t, _ in entry["rows"]
+                   if re.search(r"\d-", t) and not re.fullmatch(r"[\d.\s-]+", lab)]  # not a label that only repeats the range
         record["valid_range"] = {"min": min(lows), "max": max(highs),
-                                 "note": "From the distribution in the codebook, which rounds it."}
+                                 "note": ("; ".join(labeled) + ". " if labeled else "")
+                                         + "From the distribution in the codebook, which rounds it."}
         record["valid_range"] = {k: (int(v) if isinstance(v, float) and v.is_integer() else v)
                                  for k, v in record["valid_range"].items()}
 
+    if not entry.get("rows") and len(present):
+        report.append(f"`{name}`: the codebook entry gave no codes or ranges, but the data has {len(present)} values")
     # C4: codes in the data that the codebook doesn't list.
     occurring = collections.Counter(present)
     # The codebook's counts should match the data's; a mismatch means a parsing or recognition error.
@@ -453,32 +459,43 @@ def documentation(record):
 
 
 def identical_documentation(a, b):
-    """Rule nsfg_identical_documentation: return the list of differences (empty means same_item).
+    """Rule nsfg_identical_documentation 0.2: return (differences, allowances); no differences means same_item.
 
-    Same name (ignoring case), same item reference, the same question text where
-    either record has one, and the same codes with the same labels, in both
-    cycles' NCHS documentation. NCHS doesn't assert this, and its 2022-2023 FAQ
-    cautions against comparing 2022-2023 with earlier cycles because of the
-    multimode design, so links from this rule have origin: rule."""
+    Same name (ignoring case), the same question text where either record has
+    one, and the same labels for the codes both codebooks list, in both cycles'
+    NCHS documentation. Three things that are artifacts of the documentation, not
+    changes to the item, are allowed, and each link's note lists the ones it used:
+    - labels that differ only in case (2017-2019 prints recode labels in capitals);
+    - codes listed by only one codebook: the NSFG codebooks list only codes that
+      occur in the data, so a code with no cases is missing from that cycle's
+      codebook (which side lacked which codes is recorded);
+    - different item references, when nothing else differs (sections were renumbered).
+    NCHS doesn't assert any of this, and its 2022-2023 FAQ cautions against
+    comparing 2022-2023 with earlier cycles because of the multimode design, so
+    links from this rule have origin: rule. 0.1 allowed none of the three."""
     da, db = documentation(a), documentation(b)
-    diffs = []
-    if da["item"] != db["item"]:
-        diffs.append(f"item {da['item']} vs {db['item']}")
+    diffs, allowed = [], []
     if da["questions"] != db["questions"]:
         if not da["questions"] or not db["questions"]:
             diffs.append("question text in only one release")
         else:
             diffs.append("question text differs")
-    if da["values"] != db["values"]:
-        ca, cb = dict(da["values"]), dict(db["values"])
-        if set(ca) != set(cb):
-            diffs.append(f"codes differ (only in {a['release']}: {sorted(set(ca) - set(cb), key=str)}; "
-                         f"only in {b['release']}: {sorted(set(cb) - set(ca), key=str)})")
-        changed = sorted((c for c in set(ca) & set(cb) if ca[c] != cb[c]), key=str)
-        if changed:
-            case_only = all(norm(ca[c]).casefold() == norm(cb[c]).casefold() for c in changed)
-            diffs.append(f"labels differ{' only in case' if case_only else ''} for codes {changed}")
-    return diffs
+    ca, cb = dict(da["values"]), dict(db["values"])
+    changed = sorted((c for c in set(ca) & set(cb) if norm(ca[c]).casefold() != norm(cb[c]).casefold()), key=str)
+    if changed:
+        diffs.append(f"labels differ for codes {changed}")
+    if any(ca[c] != cb[c] for c in set(ca) & set(cb)) and not changed:
+        allowed.append("labels differ only in case")
+    for x, y, rel in ((ca, cb, b["release"]), (cb, ca, a["release"])):
+        lacking = sorted(set(x) - set(y), key=str)
+        if lacking:
+            allowed.append(f"codes {lacking} aren't in the {rel} codebook (no cases)")
+    if da["item"] != db["item"]:
+        if diffs:
+            diffs.insert(0, f"item {da['item']} vs {db['item']}")
+        else:
+            allowed.append(f"item reference {da['item']} in {a['release']}, {db['item']} in {b['release']}")
+    return diffs, allowed
 
 
 def build_links(spec, by_key):
@@ -507,19 +524,23 @@ def build_links(spec, by_key):
         if (table, name) in done:
             continue
         a, b = by_key[(old, table, name)], by_key[(new, table, name)]
-        diffs = identical_documentation(a, b)
+        diffs, allowed = identical_documentation(a, b)
         if diffs:
-            unlinked.append(f"- `{table}/{name}`: {'; '.join(diffs)}")
+            unlinked.append(f"- `{table}/{name}`: {'; '.join(diffs)}"
+                            + (f" (allowed: {'; '.join(allowed)})" if allowed else ""))
             continue
-        links.append({"from": ref(a), "to": ref(b), "relations": ["same_item"],
-                      "origin": {"origin": "rule", "rule": LINK_RULE, "rule_version": LINK_RULE_VERSION,
-                                 "source": b["source_location"]["source"],
-                                 "note": "Same name (ignoring case), item reference, question text and coded values "
-                                         f"in both cycles' NCHS documentation ({a['source_location']['source']} and "
-                                         f"{b['source_location']['source']}). NCHS doesn't assert this, and its 2022-2023 "
-                                         "FAQ cautions against comparing 2022-2023 with earlier cycles because of the "
-                                         "multimode design."}})
-        linked.append(f"`{table}/{name}`")
+        link = {"from": ref(a), "to": ref(b), "relations": ["same_item"],
+                "origin": {"origin": "rule", "rule": LINK_RULE, "rule_version": LINK_RULE_VERSION,
+                           "source": b["source_location"]["source"],
+                           "note": "Same name (ignoring case), question text and value labels in both cycles' NCHS "
+                                   f"documentation ({a['source_location']['source']} and "
+                                   f"{b['source_location']['source']}). NCHS doesn't assert this, and its 2022-2023 "
+                                   "FAQ cautions against comparing 2022-2023 with earlier cycles because of the "
+                                   "multimode design."}}
+        if allowed:
+            link["note"] = "Allowed by the rule: " + "; ".join(allowed) + "."
+        links.append(link)
+        linked.append(f"`{table}/{name}`" + (f" ({'; '.join(allowed)})" if allowed else ""))
     lines = [f"- From NCHS's summary of questionnaire changes: {len(done)}",
              f"- By rule `{LINK_RULE}` (same_item): {len(linked)}: {', '.join(linked) or 'none'}",
              f"- Shared names left unlinked: {len(unlinked)}", "", *unlinked] + (lines and ["", *lines])
