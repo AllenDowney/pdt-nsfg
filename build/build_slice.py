@@ -1,40 +1,79 @@
-"""Build the NSFG slice's metadata records from the codebook text and the SAS data file.
+"""Build the NSFG slice's metadata records from the codebooks, questionnaires and data files.
 
 Usage:
     python build/build_slice.py
 
-Reads build/slice.yaml, data/raw/2022-2023-FemResp-Codebook.txt (the CDC PDF
-codebook converted with `pdftotext -layout`) and
-data/raw/NSFG-2022-2023-FemRespPUFData.sas7bdat. Writes
-metadata/releases/<release>/variables.jsonl, metadata/derived/scale_signature.jsonl
-and build/report.md.
+Reads build/slice.yaml and the files under data/raw/ it names. Writes
+metadata/releases/<release>/<table>/variables.jsonl, metadata/links.jsonl,
+metadata/derived/scale_signature.jsonl and build/report.md.
+
+Two releases, with different documentation:
+
+- 2022-2023: one codebook per table in NCHS's own layout (parse_codebook below),
+  with no question text; the SAS data files. Question text comes from the
+  CAPI-lite questionnaires, matched by variable name (build/capilite.py; the
+  User's Guide says names match the questionnaire's).
+- 2017-2019: section codebooks per table in ICPSR's layout, with question text
+  (build/icpsr_codebook.py); fixed-width data with Stata dictionaries (.dct),
+  whose variable labels are the records' labels.
 
 Where each field comes from:
 - label, variable type, universe, notes, codes and labels: the codebook
-- which codes occur, storage type: the SAS file (public pandas API)
+  (2017-2019 labels: the .dct)
+- questions: the codebook (2017-2019) or the CAPI-lite questionnaire (2022-2023)
+- which codes occur, storage type: the data file
 - measure: build/slice.yaml (hand)
 - which codes are missing, and why: a rule over the codebook's labels, because
   the NSFG codebook doesn't mark missing codes (rule nsfg_missing_from_labels)
 
-The codebook has no question text; labels start with the questionnaire item
-(e.g. "AD-7b"), which is recorded as an extension.
+Links between the releases (STANDARD.md §5.2): the ones NCHS's summary of
+questionnaire changes asserts (slice.yaml publisher_links), and the rule
+nsfg_identical_documentation (see identical_documentation below).
 """
 
 import collections
+import gzip
 import json
 import re
+import subprocess
 from pathlib import Path
 
 import pandas as pd
 import yaml
+
+import capilite
+import icpsr_codebook
+
+# The scale-signature rule is shared (PublicDataToolkit lib/pdt/derived.py). Use pdt from
+# PYTHONPATH; otherwise use a checkout next to this repo, or $PDT.
+try:
+    from pdt.derived import scale_signatures
+except ImportError:
+    import os, sys
+    sys.path.insert(0, str(Path(os.environ.get("PDT", Path(__file__).resolve().parents[2] / "PublicDataToolkit")) / "lib"))
+    from pdt.derived import scale_signatures
 
 ROOT = Path(__file__).resolve().parent.parent
 RAW = ROOT / "data" / "raw"
 META = ROOT / "metadata"
 
 RULE_VERSION = "0.1"
+LINK_RULE, LINK_RULE_VERSION = "nsfg_identical_documentation", "0.1"
+CHANGES_SOURCE = "nsfg-2022-2023-quex-changes"
 
-# ---------------------------------------------------------------- codebook
+
+def text_of(rel_path):
+    """The text of a file under data/raw; a PDF is converted with pdftotext -layout once and cached beside it."""
+    path = RAW / rel_path
+    if path.suffix == ".pdf":
+        txt = path.with_suffix(".txt")
+        if not txt.exists():
+            subprocess.run(["pdftotext", "-layout", str(path), str(txt)], check=True)
+        return txt
+    return path
+
+
+# ------------------------------------------------- 2022-2023 codebook (NCHS layout)
 
 NAME_LINE = re.compile(r"^([A-Za-z][A-Za-z0-9_]*)\s*$")
 FIELD = re.compile(r"^(LABEL|VARIABLE TYPE|UNIVERSE|NOTES|LENGTH|VARNUM)\s{2,}(.*)$")
@@ -125,8 +164,6 @@ MISSING_LABELS = {
 
 ITEM = re.compile(r"^([A-Z]{1,3}-\d+[a-z]?)\s+")
 
-SCALE_SIGNATURES = {("Yes", "No"): "yes_no"}
-
 
 # Rule nsfg_variable_type: NCHS's VARIABLE TYPE, mapped to the standard's variable_type.
 NSFG_TYPES = {"raw": "response", "recode": "recode", "respondent recode": "recode", "pregnancy recode": "recode",
@@ -147,26 +184,57 @@ def missing_types(label):
     return MISSING_LABELS.get(label.strip().lower())
 
 
+# ---------------------------------------------------------------- data files
+
+DCT_LINE = re.compile(r"_column\((\d+)\)\s+\S+\s+(\w+)\s+%(\d+)(?:\.\d+)?[a-z]\s+\"(.*)\"")
+
+
+def read_dct(path):
+    """Return [(name, start, width, label)] from a Stata dictionary."""
+    return [(m.group(2), int(m.group(1)), int(m.group(3)), m.group(4))
+            for line in path.read_text(encoding="latin-1").splitlines() if (m := DCT_LINE.search(line))]
+
+
+def read_data(t, names):
+    """Return (frame, {NAME: dictionary label}) for one table; columns keep the file's spelling."""
+    data = t["data"]
+    if "dictionary" not in data:
+        return pd.read_sas(RAW / data["path"], format="sas7bdat", encoding="latin-1"), {}
+    wanted = {n.upper() for n in names}
+    cols = [c for c in read_dct(RAW / data["dictionary"]["path"]) if c[0].upper() in wanted]
+    path = RAW / data["path"]
+    with (gzip.open(path, "rt", encoding="latin-1") if path.suffix == ".gz" else open(path, encoding="latin-1")) as f:
+        frame = pd.read_fwf(f, colspecs=[(s - 1, s - 1 + w) for _, s, w, _ in cols],
+                            names=[n for n, _, _, _ in cols], header=None, dtype=str)
+    frame = frame.apply(pd.to_numeric, errors="coerce")
+    return frame, {n.upper(): label for n, _, _, label in cols}
+
+
 # ---------------------------------------------------------------- build
 
 
 def load_slice():
-    """Return (spec, {table: [names]}, measure). Names may repeat across tables, not within one."""
+    """Return (spec, {release: {table: [names]}}, measure by upper-case name)."""
     spec = yaml.safe_load((ROOT / "build" / "slice.yaml").read_text())
     names = {}
-    for table, t in spec["tables"].items():
-        names[table] = [n for group in t["variables"].values() for n in group]
-        assert len(names[table]) == len(set(names[table])), f"duplicate names in table {table}"
-    measure = {n: m for m, ns in spec["measure"].items() for n in ns}
+    for rel, r in spec["releases"].items():
+        names[rel] = {}
+        for table, t in r["tables"].items():
+            ns = [n for group in t["variables"].values() for n in group]
+            assert len(ns) == len(set(ns)), f"duplicate names in {rel}/{table}"
+            names[rel][table] = ns
+    measure = {n.upper(): m for m, ns in spec["measure"].items() for n in ns}
     return spec, names, measure
 
 
-def build_variable(name, spec, measure, entry, col, table, CODEBOOK, DATA):
-    """One record. CODEBOOK and DATA are this table's source ids in sources.yaml."""
+def build_variable(name, rel, rspec, measure, entry, col, table, codebook_src, data_src,
+                   label=None, label_src=None, block=None, questionnaire_src=None):
+    """One record. entry is the codebook entry; label and label_src override its label (2017-2019's .dct);
+    block is the questionnaire block for this name (2022-2023)."""
     report = []
-    hand = {"origin": "hand", "author": spec["author"], "date": spec["date"]}
-    record = {"dataset": "nsfg", "release": spec["release"], "table": table, "name": name}
-    label = entry.get("label", "")
+    hand = {"origin": "hand", "author": rspec["author"], "date": rspec["date"]}
+    record = {"dataset": "nsfg", "release": rel, "table": table, "name": name}
+    label = label or entry.get("label", "")
     item = ITEM.match(label)
     if label:
         record["label"] = label
@@ -174,8 +242,8 @@ def build_variable(name, spec, measure, entry, col, table, CODEBOOK, DATA):
     present = numbers.dropna()
     if len(present):
         record["storage_type"] = "integer" if (present % 1 == 0).all() else "float"
-    if name in measure:
-        record["measure"] = measure[name]
+    if name.upper() in measure:
+        record["measure"] = measure[name.upper()]
     if entry.get("universe"):
         record["universe"] = entry["universe"]
     if entry.get("notes"):
@@ -196,16 +264,33 @@ def build_variable(name, spec, measure, entry, col, table, CODEBOOK, DATA):
             record["notes"] = (record["notes"] + "\n" if "notes" in record else "") + "Codebook margin note: " + margin
         report.append(f"`{name}`: margin box in the codebook: {margin[:100]}")
 
+    # Question text: the 2017-2019 codebook gives it; for 2022-2023 it's the questionnaire block.
+    item_ref = entry.get("item") or (item.group(1) if item else None)
+    questions_prov = None
+    if entry.get("question"):
+        record["questions"] = [{"text": re.sub(r"\s+", " ", entry["question"]).strip()}]
+        questions_prov = {"origin": "publisher", "source": codebook_src, "location": f"{name.upper()}, item {item_ref}"}
+    elif block:
+        record["questions"] = block["questions"]
+        questions_prov = {"origin": "rule", "rule": capilite.RULE, "rule_version": capilite.RULE_VERSION,
+                          "source": questionnaire_src, "location": f"{block['item']} {name.upper()}, p. {block['page']}",
+                          "note": "Matched by variable name. Layout line breaks removed; one wording per IF/ELSE "
+                                  "condition in the questionnaire, with the condition in the note; lines in capitals "
+                                  "are instructions."}
+        if item_ref and item_ref != block["item"]:
+            report.append(f"`{name}`: the codebook's label gives item {item_ref}, the questionnaire {block['item']}")
+
     values, documented, ranges, n_valid = [], set(), [], 0
     for row_label, token, n in entry.get("rows", []):
         if token == ".":
             code = "."
         elif re.search(r"\d-", token):
             lo, hi = re.split(r"(?<=\d)-", token, maxsplit=1)
-            # The codebook rounds ranges (1170.96-78770.13); allow half a unit in the last place shown.
-            places = max(len(x.split(".")[1]) if "." in x else 0 for x in (lo, hi))
-            slack = 0.5 * 10 ** -places if places else 0
-            ranges.append((float(lo) - slack, float(hi) + slack))
+            # The codebook rounds ranges (1170.96-78770.13), each end to its own number of places
+            # ("1340.862-83332.1"); allow half a unit in the last place shown at each end.
+            def slack(x):
+                return 0.5 * 10 ** -len(x.split(".")[1]) if "." in x else 0
+            ranges.append((float(lo) - slack(lo), float(hi) + slack(hi)))
             n_valid += n
             continue
         else:
@@ -216,7 +301,7 @@ def build_variable(name, spec, measure, entry, col, table, CODEBOOK, DATA):
         if types:
             values.append({"code": code, "label": row_label, "kind": "missing", "missing_types": types,
                            "origin": {"origin": "rule", "rule": "nsfg_missing_from_labels", "rule_version": RULE_VERSION,
-                                      "source": CODEBOOK,
+                                      "source": codebook_src,
                                       "note": "The codebook doesn't mark missing codes; kind and type from the label."}})
         else:
             values.append({"code": code, "label": row_label, "kind": "valid"})
@@ -233,6 +318,13 @@ def build_variable(name, spec, measure, entry, col, table, CODEBOOK, DATA):
 
     # C4: codes in the data that the codebook doesn't list.
     occurring = collections.Counter(present)
+    # The codebook's counts should match the data's; a mismatch means a parsing or recognition error.
+    for row_label, token, n in entry.get("rows", []):
+        if re.search(r"\d-", token):
+            continue
+        got = int(col.isna().sum()) if token == "." else occurring.get(float(token), 0)
+        if got != n:
+            report.append(f"`{name}` code {token}: the codebook counts {n}, the data {got}")
     n_null = int(col.isna().sum())
     if n_null and "." not in documented and (values or ranges):
         report.append(f"`{name}`: {n_null} missing values in the data, but no '.' row in the codebook")
@@ -241,126 +333,250 @@ def build_variable(name, spec, measure, entry, col, table, CODEBOOK, DATA):
         in_range = any(lo <= code <= hi for lo, hi in ranges)
         if code not in documented and not in_range and (values or ranges):
             values.append({"code": code, "label": "", "kind": "unresolved",
-                           "origin": {"origin": "data_file", "source": DATA,
+                           "origin": {"origin": "data_file", "source": data_src,
                                       "note": f"Occurs {count} times in the data; not in the codebook."}})
             report.append(f"`{name}` code {code}: occurs {count} times, not in the codebook; marked unresolved")
     if values:
         record["values"] = values
-    if "valid_range" not in record and measure.get(name) in {"continuous", "weight", "identifier", "count"} \
+    if "valid_range" not in record and measure.get(name.upper()) in {"continuous", "weight", "identifier", "count"} \
             and len(present) and not values:
         record["valid_range"] = {k: (int(v) if float(v).is_integer() else float(v))
                                  for k, v in {"min": present.min(), "max": present.max()}.items()}
 
-    record["availability"] = [{"wave": spec["release"], "n": int(n_valid) if (values or ranges) else int(len(present))}]
-    record["source_location"] = {"source": CODEBOOK, "anchor": name.upper()}
+    record["availability"] = [{"wave": rel, "n": int(n_valid) if (values or ranges) else int(len(present))}]
+    record["source_location"] = {"source": codebook_src, "anchor": name.upper()}
 
     fields = {
-        "values": {"origin": "publisher", "source": CODEBOOK,
+        "values": {"origin": "publisher", "source": codebook_src,
                    "note": "Codes and labels from the codebook's distribution table; which are missing by rule (see each code)."},
-        "availability": {"origin": "publisher", "source": CODEBOOK,
+        "availability": {"origin": "publisher", "source": codebook_src,
                          "note": "n is the codebook's count of valid answers."},
     }
+    if label_src and "label" in record:
+        fields["label"] = {"origin": "publisher", "source": label_src, "note": "The variable label in NCHS's Stata dictionary."}
+    if questions_prov:
+        fields["questions"] = questions_prov
     if "storage_type" in record:
         fields["storage_type"] = {"origin": "rule", "rule": "storage_type_from_values", "rule_version": RULE_VERSION,
-                                  "source": DATA, "note": "integer if every value in the data is whole, else float."}
+                                  "source": data_src, "note": "integer if every value in the data is whole, else float."}
     if "measure" in record:
         fields["measure"] = hand
     if "valid_range" in record and not ranges:
-        fields["valid_range"] = {"origin": "data_file", "source": DATA, "note": "Min and max of the values that occur."}
+        fields["valid_range"] = {"origin": "data_file", "source": data_src, "note": "Min and max of the values that occur."}
     if universe_fix:
-        fields["universe"] = {"origin": "publisher", "source": CODEBOOK, "location": f"{name}, margin box",
+        fields["universe"] = {"origin": "publisher", "source": codebook_src, "location": f"{name}, margin box",
                               "note": "NCHS's corrected universe, printed beside the entry."}
     vtype = variable_type(entry.get("variable_type"), name)
     if vtype:
         record["variable_type"] = vtype
         fields["variable_type"] = {"origin": "rule", "rule": "nsfg_variable_type", "rule_version": RULE_VERSION,
-                                   "source": CODEBOOK, "note": f"From the codebook's VARIABLE TYPE {entry['variable_type']!r}."}
-    record["provenance"] = {"record": {"origin": "publisher", "source": CODEBOOK}, "fields": fields}
+                                   "source": codebook_src, "note": f"From the codebook's VARIABLE TYPE {entry['variable_type']!r}."}
+    record["provenance"] = {"record": {"origin": "publisher", "source": codebook_src}, "fields": fields}
 
     ext = {}
-    if item:
-        ext["item"] = item.group(1)
+    if item_ref:
+        ext["item"] = item_ref
     if ext:
         record["extensions"] = {"nsfg": ext}
     return record, report
 
 
-def build_table(spec, table, names, measure):
+def codebook_entries(rspec, t, names):
+    """Return {NAME: entry}, each with entry["source"], the codebook source it came from."""
+    entries = {}
+    for cb in t["codebook"]:
+        path = text_of(cb["path"])
+        found = parse_codebook(path, names) if rspec["codebook_format"] == "nchs" else icpsr_codebook.parse([path], names)
+        for name, entry in found.items():
+            if name not in entries:
+                entries[name] = dict(entry, source=cb["source"])
+    return entries
+
+
+def build_table(spec, rel, table, names, measure):
     """Build one table's records; return (records, notes, summary line)."""
-    t = spec["tables"][table]
-    codebook_path, data_path = RAW / t["codebook"]["path"], RAW / t["data"]["path"]
-    codebook = parse_codebook(codebook_path, names)
-    frame = pd.read_sas(data_path, format="sas7bdat", encoding="latin-1")
+    rspec = spec["releases"][rel]
+    t = rspec["tables"][table]
+    codebook = codebook_entries(rspec, t, names)
+    frame, dict_labels = read_data(t, names)
     upper = {c.upper(): c for c in frame.columns}
+    blocks, q_src = {}, None
+    if "questionnaire" in t:
+        blocks, q_src = capilite.parse(text_of(t["questionnaire"]["path"])), t["questionnaire"]["source"]
     records, notes = [], []
     for name in names:
         entry = codebook.get(name.upper())
         if entry is None:
             notes.append(f"`{table}/{name}`: not found in the codebook")
-            entry = {"rows": []}
-        if name not in frame.columns:
-            notes.append(f"`{table}/{name}`: not in the data (as {upper.get(name.upper())!r})")
-        if name.upper() != name and name.upper() in codebook:
+            entry = {"rows": [], "source": t["codebook"][0]["source"]}
+        if name.upper() not in upper:
+            notes.append(f"`{table}/{name}`: not in the data")
+            continue
+        record_name = entry.get("name", name)  # 2017-2019: the codebook's own spelling
+        if rspec["codebook_format"] == "nchs" and name.upper() != name and name.upper() in codebook:
             notes.append(f"`{table}/{name}`: the codebook writes it as {name.upper()}")
-        record, report = build_variable(name, spec, measure, entry, frame[upper[name.upper()]], table,
-                                        t["codebook"]["source"], t["data"]["source"])
+        dct = t["data"].get("dictionary", {})
+        record, report = build_variable(record_name, rel, rspec, measure, entry, frame[upper[name.upper()]], table,
+                                        entry["source"], t["data"]["source"],
+                                        label=dict_labels.get(name.upper()), label_src=dct.get("source"),
+                                        block=blocks.get(name.upper()), questionnaire_src=q_src)
         records.append(record)
         notes.extend(f"`{table}/{n[1:]}" if n.startswith("`") else n for n in report)
-    # Coverage (C3) for the whole file: codebook entries vs data columns.
-    all_codebook = parse_codebook(codebook_path, list(upper))
-    only_data = sorted(set(upper) - set(all_codebook))
-    summary = (f"- `{table}`: {len(records)} variables in the slice; data file has {len(upper)} columns, "
-               f"codebook entries found for {len(all_codebook)}; in the data but not the codebook: {only_data[:10] or 'none'}")
+    if rspec["codebook_format"] == "nchs":
+        # Coverage (C3) for the whole file: codebook entries vs data columns.
+        all_codebook = parse_codebook(text_of(t["codebook"][0]["path"]), list(upper))
+        only_data = sorted(set(upper) - set(all_codebook))
+        summary = (f"- `{table}`: {len(records)} variables in the slice; data file has {len(upper)} columns, "
+                   f"codebook entries found for {len(all_codebook)}; in the data but not the codebook: {only_data[:10] or 'none'}")
+    else:
+        summary = (f"- `{table}`: {len(records)} variables in the slice, from {len(t['codebook'])} section codebook(s). "
+                   f"Coverage isn't checked: only the sections that hold slice variables are sources.")
     return records, notes, summary
+
+
+# ---------------------------------------------------------------- links
+
+
+def norm(text):
+    return re.sub(r"\s+", " ", text or "").strip()
+
+
+def documentation(record):
+    """What rule nsfg_identical_documentation compares: item, question texts, and coded values.
+    The '.' row is left out: the codebook prints it only when some case is system missing."""
+    return {"item": record.get("extensions", {}).get("nsfg", {}).get("item"),
+            "questions": [norm(q["text"]) for q in record.get("questions", [])],
+            "values": [(v["code"], v["label"]) for v in record.get("values", []) if v["code"] != "."]}
+
+
+def identical_documentation(a, b):
+    """Rule nsfg_identical_documentation: return the list of differences (empty means same_item).
+
+    Same name (ignoring case), same item reference, the same question text where
+    either record has one, and the same codes with the same labels, in both
+    cycles' NCHS documentation. NCHS doesn't assert this, and its 2022-2023 FAQ
+    cautions against comparing 2022-2023 with earlier cycles because of the
+    multimode design, so links from this rule have origin: rule."""
+    da, db = documentation(a), documentation(b)
+    diffs = []
+    if da["item"] != db["item"]:
+        diffs.append(f"item {da['item']} vs {db['item']}")
+    if da["questions"] != db["questions"]:
+        if not da["questions"] or not db["questions"]:
+            diffs.append("question text in only one release")
+        else:
+            diffs.append("question text differs")
+    if da["values"] != db["values"]:
+        ca, cb = dict(da["values"]), dict(db["values"])
+        if set(ca) != set(cb):
+            diffs.append(f"codes differ (only in {a['release']}: {sorted(set(ca) - set(cb), key=str)}; "
+                         f"only in {b['release']}: {sorted(set(cb) - set(ca), key=str)})")
+        changed = sorted((c for c in set(ca) & set(cb) if ca[c] != cb[c]), key=str)
+        if changed:
+            case_only = all(norm(ca[c]).casefold() == norm(cb[c]).casefold() for c in changed)
+            diffs.append(f"labels differ{' only in case' if case_only else ''} for codes {changed}")
+    return diffs
+
+
+def build_links(spec, by_key):
+    """Return (links, report lines). by_key maps (release, table, NAME) to a record."""
+    old, new = "2017-2019", "2022-2023"
+    links, lines, done = [], [], set()
+
+    def ref(r):
+        return {"release": r["release"], "table": r["table"], "name": r["name"]}
+
+    for pl in spec.get("publisher_links", []):
+        for table in pl["tables"]:
+            a, b = by_key.get((old, table, pl["from"].upper())), by_key.get((new, table, pl["to"].upper()))
+            if not (a and b):
+                lines.append(f"- publisher link {table}/{pl['from']} -> {pl['to']}: a record is missing")
+                continue
+            links.append({"from": ref(a), "to": ref(b), "relations": pl["relations"],
+                          "origin": {"origin": "publisher", "source": CHANGES_SOURCE, "location": pl["location"],
+                                     "note": f"Quote: {pl['quote']}"},
+                          "note": norm(pl["note"])})
+            done.add((table, pl["from"].upper()))
+
+    shared = sorted((t, n) for (rel, t, n) in by_key if rel == new and (old, t, n) in by_key)
+    linked, unlinked = [], []
+    for table, name in shared:
+        if (table, name) in done:
+            continue
+        a, b = by_key[(old, table, name)], by_key[(new, table, name)]
+        diffs = identical_documentation(a, b)
+        if diffs:
+            unlinked.append(f"- `{table}/{name}`: {'; '.join(diffs)}")
+            continue
+        links.append({"from": ref(a), "to": ref(b), "relations": ["same_item"],
+                      "origin": {"origin": "rule", "rule": LINK_RULE, "rule_version": LINK_RULE_VERSION,
+                                 "source": b["source_location"]["source"],
+                                 "note": "Same name (ignoring case), item reference, question text and coded values "
+                                         f"in both cycles' NCHS documentation ({a['source_location']['source']} and "
+                                         f"{b['source_location']['source']}). NCHS doesn't assert this, and its 2022-2023 "
+                                         "FAQ cautions against comparing 2022-2023 with earlier cycles because of the "
+                                         "multimode design."}})
+        linked.append(f"`{table}/{name}`")
+    lines = [f"- From NCHS's summary of questionnaire changes: {len(done)}",
+             f"- By rule `{LINK_RULE}` (same_item): {len(linked)}: {', '.join(linked) or 'none'}",
+             f"- Shared names left unlinked: {len(unlinked)}", "", *unlinked] + (lines and ["", *lines])
+    return links, lines
+
+
+# ---------------------------------------------------------------- main
 
 
 def main():
     spec, names, measure = load_slice()
-    release_dir = META / "releases" / spec["release"]
-    old = release_dir / "variables.jsonl"
-    if old.exists():
-        old.unlink()  # from before the release had tables
-    all_records, notes, summaries = [], [], []
-    for table in spec["tables"]:
-        records, table_notes, summary = build_table(spec, table, names[table], measure)
-        write_jsonl(release_dir / table / "variables.jsonl", records)
-        all_records += records
-        notes += table_notes
-        summaries.append(summary)
+    all_records, sections = [], []
+    for rel in spec["releases"]:
+        release_dir = META / "releases" / rel
+        notes, summaries = [], []
+        for table in spec["releases"][rel]["tables"]:
+            records, table_notes, summary = build_table(spec, rel, table, names[rel][table], measure)
+            write_jsonl(release_dir / table / "variables.jsonl", records)
+            all_records += records
+            notes += table_notes
+            summaries.append(summary)
+        recs = [r for r in all_records if r["release"] == rel]
+        types = collections.Counter(t for r in recs for v in r.get("values", []) if v["kind"] == "missing"
+                                    for t in v["missing_types"])
+        sections += [
+            f"## Release {rel}", "",
+            *summaries,
+            f"- With a questionnaire item: {sum('item' in r.get('extensions', {}).get('nsfg', {}) for r in recs)} of {len(recs)}",
+            f"- With question text: {sum('questions' in r for r in recs)} of {len(recs)}",
+            f"- Unresolved codes: {sum(v['kind'] == 'unresolved' for r in recs for v in r.get('values', []))}",
+            "", "Missing types assigned, by number of codes:", "",
+            "| Type | Codes |", "|---|---|",
+            *[f"| `{t}` | {k} |" for t, k in sorted(types.items())],
+            "", "Values and labels to look at:", "",
+            *([f"- {n}" for n in notes] or ["None."]),
+            "",
+        ]
 
-    signatures = [{"target": {"variable": r["name"], "table": r["table"]}, "property": "scale_signature",
-                   "value": SCALE_SIGNATURES[labels], "rule": "scale_signature_from_valid_labels",
-                   "rule_version": RULE_VERSION}
-                  for r in all_records
-                  if (labels := tuple(v["label"] for v in r.get("values", []) if v["kind"] == "valid")) in SCALE_SIGNATURES]
+    signatures = scale_signatures(all_records)
     write_jsonl(META / "derived" / "scale_signature.jsonl", signatures)
 
-    types = collections.Counter(t for r in all_records for v in r.get("values", []) if v["kind"] == "missing"
-                                for t in v["missing_types"])
+    by_key = {(r["release"], r["table"], r["name"].upper()): r for r in all_records}
+    links, link_lines = build_links(spec, by_key)
+    write_jsonl(META / "links.jsonl", links)
+
     lines = [
-        f"# Build report: NSFG slice, release {spec['release']}",
+        "# Build report: NSFG slice",
         "",
         "Generated by `build/build_slice.py`. Do not edit.",
         "",
-        *summaries,
-        f"- With a questionnaire item in the label: "
-        f"{sum('item' in r.get('extensions', {}).get('nsfg', {}) for r in all_records)} of {len(all_records)}",
-        f"- Unresolved codes: {sum(v['kind'] == 'unresolved' for r in all_records for v in r.get('values', []))}",
-        f"- Scale signatures: {len(signatures)}",
+        f"- Releases: {', '.join(spec['releases'])}; {len(all_records)} records; scale signatures: {len(signatures)}",
         "",
-        "## Missing types assigned, by number of codes",
+        *sections,
+        "## Links from 2017-2019 to 2022-2023",
         "",
-        "| Type | Codes |",
-        "|---|---|",
-        *[f"| `{t}` | {k} |" for t, k in sorted(types.items())],
-        "",
-        "## Values and labels to look at",
-        "",
-        *([f"- {n}" for n in notes] or ["None."]),
+        *link_lines,
         "",
     ]
     (ROOT / "build" / "report.md").write_text("\n".join(lines))
-    print(f"{len(all_records)} variables in {len(spec['tables'])} tables; see build/report.md")
+    print(f"{len(all_records)} records, {len(links)} links; see build/report.md")
 
 
 def write_jsonl(path, records):

@@ -14,7 +14,7 @@ data:
 
 ## Build metadata records from data/raw (see build/build_slice.py)
 build:
-	$(PYTHON) build/build_slice.py
+	PYTHONPATH=$(PDT)/lib $(PYTHON) build/build_slice.py
 
 ## Generate agent/, docs/ and export/ from the records (pdt views)
 views:

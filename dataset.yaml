@@ -11,7 +11,7 @@ description: >
   cycles; cycle 12 is 2022-2023.
 citation: >
   National Center for Health Statistics, National Survey of Family Growth,
-  2022-2023.
+  2022-2023 and 2017-2019.
 terms:
   url: https://www.cdc.gov/nchs/policy/data-user-agreement.html
   summary: >
@@ -30,7 +30,10 @@ terms:
   reviewed_on: "2026-11-10"
 naming:
   case: upper
-  note: The codebook writes names in uppercase; the SAS data file uses mixed case for a few (CaseID).
+  note: >
+    The codebook writes names in uppercase; the 2022-2023 SAS data file uses mixed case for a few
+    (CaseID). The 2017-2019 codebooks write computed variables in lowercase (age_r), as NCHS's
+    convention is, and the records keep that spelling; its data file writes every name in lowercase.
 dimensions:
   wave:
     label: cycle
@@ -40,20 +43,55 @@ releases:
     label: NSFG 2022-2023 (cycle 12) public-use files
     status: current
     sources: [nsfg-female-codebook, nsfg-female-sas, nsfg-male-codebook, nsfg-male-sas,
-              nsfg-pregnancy-codebook, nsfg-pregnancy-sas]
+              nsfg-pregnancy-codebook, nsfg-pregnancy-sas, nsfg-2022-2023-female-capilite,
+              nsfg-2022-2023-male-capilite, nsfg-2022-2023-quex-changes]
     tables:
       - id: female
         label: Female respondents
-        sources: [nsfg-female-codebook, nsfg-female-sas]
+        sources: [nsfg-female-codebook, nsfg-female-sas, nsfg-2022-2023-female-capilite]
         key: [CaseID]
       - id: male
         label: Male respondents
-        sources: [nsfg-male-codebook, nsfg-male-sas]
+        sources: [nsfg-male-codebook, nsfg-male-sas, nsfg-2022-2023-male-capilite]
         key: [CaseID]
       - id: pregnancy
         label: Pregnancies reported by female respondents
-        sources: [nsfg-pregnancy-codebook, nsfg-pregnancy-sas]
+        sources: [nsfg-pregnancy-codebook, nsfg-pregnancy-sas, nsfg-2022-2023-female-capilite]
         key: [CaseID, PREGORDR]
         references:
           - columns: [CaseID]
+            table: female
+  - id: "2017-2019"
+    label: NSFG 2017-2019 (cycle 11) public-use files
+    status: current
+    sources: [nsfg-2017-2019-female-codebook-screener, nsfg-2017-2019-female-codebook-a,
+              nsfg-2017-2019-female-codebook-c, nsfg-2017-2019-female-codebook-i,
+              nsfg-2017-2019-female-codebook-j, nsfg-2017-2019-female-codebook-recodes,
+              nsfg-2017-2019-female-codebook-weights, nsfg-2017-2019-female-dat, nsfg-2017-2019-female-dct,
+              nsfg-2017-2019-male-codebook-screener, nsfg-2017-2019-male-codebook-a,
+              nsfg-2017-2019-male-codebook-j, nsfg-2017-2019-male-codebook-k,
+              nsfg-2017-2019-male-codebook-recodes, nsfg-2017-2019-male-codebook-weights,
+              nsfg-2017-2019-male-dat, nsfg-2017-2019-male-dct,
+              nsfg-2017-2019-pregnancy-codebook, nsfg-2017-2019-pregnancy-dat, nsfg-2017-2019-pregnancy-dct]
+    tables:
+      - id: female
+        label: Female respondents
+        sources: [nsfg-2017-2019-female-codebook-screener, nsfg-2017-2019-female-codebook-a,
+                  nsfg-2017-2019-female-codebook-c, nsfg-2017-2019-female-codebook-i,
+                  nsfg-2017-2019-female-codebook-j, nsfg-2017-2019-female-codebook-recodes,
+                  nsfg-2017-2019-female-codebook-weights, nsfg-2017-2019-female-dat, nsfg-2017-2019-female-dct]
+        key: [CASEID]
+      - id: male
+        label: Male respondents
+        sources: [nsfg-2017-2019-male-codebook-screener, nsfg-2017-2019-male-codebook-a,
+                  nsfg-2017-2019-male-codebook-j, nsfg-2017-2019-male-codebook-k,
+                  nsfg-2017-2019-male-codebook-recodes, nsfg-2017-2019-male-codebook-weights,
+                  nsfg-2017-2019-male-dat, nsfg-2017-2019-male-dct]
+        key: [CASEID]
+      - id: pregnancy
+        label: Pregnancies reported by female respondents
+        sources: [nsfg-2017-2019-pregnancy-codebook, nsfg-2017-2019-pregnancy-dat, nsfg-2017-2019-pregnancy-dct]
+        key: [CASEID, pregordr]
+        references:
+          - columns: [CASEID]
             table: female

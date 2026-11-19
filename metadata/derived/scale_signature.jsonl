@@ -1,1 +1,2 @@
-{"target": {"variable": "pmarpreg", "table": "pregnancy"}, "property": "scale_signature", "value": "yes_no", "rule": "scale_signature_from_valid_labels", "rule_version": "0.1"}
+{"target": {"release": "2022-2023", "table": "pregnancy", "variable": "pmarpreg"}, "property": "scale_signature", "value": "yes_no", "rule": "scale_signature_from_valid_labels", "rule_version": "0.2"}
+{"target": {"release": "2017-2019", "table": "pregnancy", "variable": "PMARPREG"}, "property": "scale_signature", "value": "yes_no", "rule": "scale_signature_from_valid_labels", "rule_version": "0.2"}

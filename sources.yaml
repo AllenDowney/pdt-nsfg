@@ -76,3 +76,376 @@ sources:
     fetched_on: "2026-11-19"
     sha256: c55562924c1cf6c6f0be2b7cb264fd7febf5dbfd76bb024c6e3b63ab843bbac5
     bytes: 7299072
+  - id: nsfg-2022-2023-female-capilite
+    title: 2022-2023 NSFG Female Questionnaire, CAPI-lite format, as text
+    kind: questionnaire
+    format: text
+    url: https://www.cdc.gov/nchs/data/nsfg/capilite/2022-2023-NSFG-Capilite-FemaleQuestionnaire.pdf
+    path: data/raw/cdc/2022-2023-NSFG-Capilite-FemaleQuestionnaire.txt
+    releases:
+    - 2022-2023
+    redistribution: ship
+    acquisition: manual
+    manual_steps: cdc.gov returns 403 to scripts. Open the URL in a browser (a headless Chromium worked
+      on 2026-11-19, after first loading the NSFG documentation page for the cycle), save the PDF in data/raw/cdc/,
+      and convert it with `pdftotext -layout` to the path.
+    fetched_on: '2026-11-19'
+    sha256: 97b6c0e4fce4f976e50dbcfda396e567038508d5c23a9150a1fb8fd9759a59f6
+    bytes: 452431
+    note: Converted from the PDF with `pdftotext -layout`; the checksum is of the text.
+  - id: nsfg-2022-2023-male-capilite
+    title: 2022-2023 NSFG Male Questionnaire, CAPI-lite format, as text
+    kind: questionnaire
+    format: text
+    url: https://www.cdc.gov/nchs/data/nsfg/capilite/2022-2023-NSFG-Capilite-MaleQuestionnaire.pdf
+    path: data/raw/cdc/2022-2023-NSFG-Capilite-MaleQuestionnaire.txt
+    releases:
+    - 2022-2023
+    redistribution: ship
+    acquisition: manual
+    manual_steps: cdc.gov returns 403 to scripts. Open the URL in a browser (a headless Chromium worked
+      on 2026-11-19, after first loading the NSFG documentation page for the cycle), save the PDF in data/raw/cdc/,
+      and convert it with `pdftotext -layout` to the path.
+    fetched_on: '2026-11-19'
+    sha256: 76b25c33ca8ea55d7c4c5a0dec2c52220328ff7abfffb3a759e1814e52424a01
+    bytes: 315142
+    note: Converted from the PDF with `pdftotext -layout`; the checksum is of the text.
+  - id: nsfg-2022-2023-quex-changes
+    title: Summary of NSFG Questionnaire Changes for 2022-2023 (relative to 2017-2019 NSFG), as text
+    kind: release_notes
+    format: text
+    url: https://www.cdc.gov/nchs/data/nsfg/quexnotes/2022-2023-NSFG-QuexChangeSummary-Since2017-2019.pdf
+    path: data/raw/cdc/2022-2023-NSFG-QuexChangeSummary-Since2017-2019.txt
+    releases:
+    - 2022-2023
+    documents:
+    - 2017-2019
+    - 2022-2023
+    redistribution: ship
+    acquisition: manual
+    manual_steps: cdc.gov returns 403 to scripts. Open the URL in a browser (a headless Chromium worked
+      on 2026-11-19, after first loading the NSFG documentation page for the cycle), save the PDF in data/raw/cdc/,
+      and convert it with `pdftotext -layout` to the path.
+    fetched_on: '2026-11-19'
+    sha256: 1cc1694484c457e1f37dff76af5a6de0704a5a14f533f5aa17898bb5a98f57df
+    bytes: 20910
+    note: Converted from the PDF with `pdftotext -layout`; the checksum is of the text. The source of the
+      links NCHS asserts between the two cycles (metadata/links.jsonl).
+  - id: nsfg-2017-2019-female-codebook-screener
+    title: 2017-2019 NSFG codebook, FemResp Screener, as text
+    kind: codebook
+    format: text
+    url: https://www.cdc.gov/nchs/data/nsfg/2017-2019_NSFG_FemResp_Screener_Codebook-508.pdf
+    path: data/raw/cdc/2017-2019_NSFG_FemResp_Screener_Codebook-508.txt
+    releases:
+    - 2017-2019
+    redistribution: ship
+    acquisition: manual
+    manual_steps: cdc.gov returns 403 to scripts. Open the URL in a browser (a headless Chromium worked
+      on 2026-11-19, after first loading the NSFG documentation page for the cycle), save the PDF in data/raw/cdc/,
+      and convert it with `pdftotext -layout` to the path.
+    fetched_on: '2026-11-19'
+    sha256: 96ea3b9773f6c1ba2b053cbf37598ce98d9a25605299f08779a73e1925cda9b8
+    bytes: 3181
+    note: Converted from the PDF with `pdftotext -layout`; the checksum is of the text.
+  - id: nsfg-2017-2019-female-codebook-a
+    title: 2017-2019 NSFG codebook, FemResp SectionA, as text
+    kind: codebook
+    format: text
+    url: https://www.cdc.gov/nchs/data/nsfg/2017-2019_NSFG_FemResp_SectionA_Codebook-508.pdf
+    path: data/raw/cdc/2017-2019_NSFG_FemResp_SectionA_Codebook-508.txt
+    releases:
+    - 2017-2019
+    redistribution: ship
+    acquisition: manual
+    manual_steps: cdc.gov returns 403 to scripts. Open the URL in a browser (a headless Chromium worked
+      on 2026-11-19, after first loading the NSFG documentation page for the cycle), save the PDF in data/raw/cdc/,
+      and convert it with `pdftotext -layout` to the path.
+    fetched_on: '2026-11-19'
+    sha256: 161c88c2167ef81f4a415492074ba58162a24b038ac67bfa03ccf7d780e18548
+    bytes: 46431
+    note: Converted from the PDF with `pdftotext -layout`; the checksum is of the text. The PDF's text layer
+      is OCR, with recognition errors in names and column numbers (H1SP for HISP); the build's counts match
+      the data for every slice variable.
+  - id: nsfg-2017-2019-female-codebook-c
+    title: 2017-2019 NSFG codebook, FemResp SectionC, as text
+    kind: codebook
+    format: text
+    url: https://www.cdc.gov/nchs/data/nsfg/2017-2019_NSFG_FemResp_SectionC_Codebook-508.pdf
+    path: data/raw/cdc/2017-2019_NSFG_FemResp_SectionC_Codebook-508.txt
+    releases:
+    - 2017-2019
+    redistribution: ship
+    acquisition: manual
+    manual_steps: cdc.gov returns 403 to scripts. Open the URL in a browser (a headless Chromium worked
+      on 2026-11-19, after first loading the NSFG documentation page for the cycle), save the PDF in data/raw/cdc/,
+      and convert it with `pdftotext -layout` to the path.
+    fetched_on: '2026-11-19'
+    sha256: 5241188de3969c3da6b71b74d3b2d0fc9af45c8ae1be594409a2c82621b50f49
+    bytes: 222921
+    note: Converted from the PDF with `pdftotext -layout`; the checksum is of the text.
+  - id: nsfg-2017-2019-female-codebook-i
+    title: 2017-2019 NSFG codebook, FemResp SectionI, as text
+    kind: codebook
+    format: text
+    url: https://www.cdc.gov/nchs/data/nsfg/2017-2019_NSFG_FemResp_SectionI_Codebook-508.pdf
+    path: data/raw/cdc/2017-2019_NSFG_FemResp_SectionI_Codebook-508.txt
+    releases:
+    - 2017-2019
+    redistribution: ship
+    acquisition: manual
+    manual_steps: cdc.gov returns 403 to scripts. Open the URL in a browser (a headless Chromium worked
+      on 2026-11-19, after first loading the NSFG documentation page for the cycle), save the PDF in data/raw/cdc/,
+      and convert it with `pdftotext -layout` to the path.
+    fetched_on: '2026-11-19'
+    sha256: a599ce9b9bf6f7f97ed946ac93f16ed844873ad6bda75476d82806ea7fdfe29f
+    bytes: 45854
+    note: Converted from the PDF with `pdftotext -layout`; the checksum is of the text.
+  - id: nsfg-2017-2019-female-codebook-j
+    title: 2017-2019 NSFG codebook, FemResp SectionJ, as text
+    kind: codebook
+    format: text
+    url: https://www.cdc.gov/nchs/data/nsfg/2017-2019_NSFG_FemResp_SectionJ_Codebook-508.pdf
+    path: data/raw/cdc/2017-2019_NSFG_FemResp_SectionJ_Codebook-508.txt
+    releases:
+    - 2017-2019
+    redistribution: ship
+    acquisition: manual
+    manual_steps: cdc.gov returns 403 to scripts. Open the URL in a browser (a headless Chromium worked
+      on 2026-11-19, after first loading the NSFG documentation page for the cycle), save the PDF in data/raw/cdc/,
+      and convert it with `pdftotext -layout` to the path.
+    fetched_on: '2026-11-19'
+    sha256: cc75a4d088611a8df9936fcce740d7e42f212691fc71362103e17ead6b44ac89
+    bytes: 83966
+    note: Converted from the PDF with `pdftotext -layout`; the checksum is of the text.
+  - id: nsfg-2017-2019-female-codebook-recodes
+    title: 2017-2019 NSFG codebook, FemResp SectionRecodes, as text
+    kind: codebook
+    format: text
+    url: https://www.cdc.gov/nchs/data/nsfg/2017-2019_NSFG_FemResp_SectionRecodes_Codebook-508.pdf
+    path: data/raw/cdc/2017-2019_NSFG_FemResp_SectionRecodes_Codebook-508.txt
+    releases:
+    - 2017-2019
+    redistribution: ship
+    acquisition: manual
+    manual_steps: cdc.gov returns 403 to scripts. Open the URL in a browser (a headless Chromium worked
+      on 2026-11-19, after first loading the NSFG documentation page for the cycle), save the PDF in data/raw/cdc/,
+      and convert it with `pdftotext -layout` to the path.
+    fetched_on: '2026-11-19'
+    sha256: 5d5e53b4ced598632cb9b7412c2e11a13156212b9f3c1b608973cc1b3fcd70cc
+    bytes: 408641
+    note: Converted from the PDF with `pdftotext -layout`; the checksum is of the text.
+  - id: nsfg-2017-2019-female-codebook-weights
+    title: 2017-2019 NSFG codebook, FemResp SectionWeights, as text
+    kind: codebook
+    format: text
+    url: https://www.cdc.gov/nchs/data/nsfg/2017-2019_NSFG_FemResp_SectionWeights_Codebook-508.pdf
+    path: data/raw/cdc/2017-2019_NSFG_FemResp_SectionWeights_Codebook-508.txt
+    releases:
+    - 2017-2019
+    redistribution: ship
+    acquisition: manual
+    manual_steps: cdc.gov returns 403 to scripts. Open the URL in a browser (a headless Chromium worked
+      on 2026-11-19, after first loading the NSFG documentation page for the cycle), save the PDF in data/raw/cdc/,
+      and convert it with `pdftotext -layout` to the path.
+    fetched_on: '2026-11-19'
+    sha256: c54e228b06dd56d7b51248925b2985733fb35b0ffbb1c2039a253abf6081d69b
+    bytes: 5063
+    note: Converted from the PDF with `pdftotext -layout`; the checksum is of the text.
+  - id: nsfg-2017-2019-male-codebook-screener
+    title: 2017-2019 NSFG codebook, Male Screener, as text
+    kind: codebook
+    format: text
+    url: https://www.cdc.gov/nchs/data/nsfg/2017-2019_NSFG_Male_Screener_Codebook-508.pdf
+    path: data/raw/cdc/2017-2019_NSFG_Male_Screener_Codebook-508.txt
+    releases:
+    - 2017-2019
+    redistribution: ship
+    acquisition: manual
+    manual_steps: cdc.gov returns 403 to scripts. Open the URL in a browser (a headless Chromium worked
+      on 2026-11-19, after first loading the NSFG documentation page for the cycle), save the PDF in data/raw/cdc/,
+      and convert it with `pdftotext -layout` to the path.
+    fetched_on: '2026-11-19'
+    sha256: b8c9cfe60b2acf40aec3b9f6c2eeac99b5244c271932647568010e624fa3ba89
+    bytes: 3183
+    note: Converted from the PDF with `pdftotext -layout`; the checksum is of the text.
+  - id: nsfg-2017-2019-male-codebook-a
+    title: 2017-2019 NSFG codebook, Male SectionA, as text
+    kind: codebook
+    format: text
+    url: https://www.cdc.gov/nchs/data/nsfg/2017-2019_NSFG_Male_SectionA_Codebook-508.pdf
+    path: data/raw/cdc/2017-2019_NSFG_Male_SectionA_Codebook-508.txt
+    releases:
+    - 2017-2019
+    redistribution: ship
+    acquisition: manual
+    manual_steps: cdc.gov returns 403 to scripts. Open the URL in a browser (a headless Chromium worked
+      on 2026-11-19, after first loading the NSFG documentation page for the cycle), save the PDF in data/raw/cdc/,
+      and convert it with `pdftotext -layout` to the path.
+    fetched_on: '2026-11-19'
+    sha256: 28fb54b8a40e2e17825dc737319180ed2190471506485e334feea533c3724203
+    bytes: 46253
+    note: Converted from the PDF with `pdftotext -layout`; the checksum is of the text.
+  - id: nsfg-2017-2019-male-codebook-j
+    title: 2017-2019 NSFG codebook, Male SectionJ, as text
+    kind: codebook
+    format: text
+    url: https://www.cdc.gov/nchs/data/nsfg/2017-2019_NSFG_Male_SectionJ_Codebook-508.pdf
+    path: data/raw/cdc/2017-2019_NSFG_Male_SectionJ_Codebook-508.txt
+    releases:
+    - 2017-2019
+    redistribution: ship
+    acquisition: manual
+    manual_steps: cdc.gov returns 403 to scripts. Open the URL in a browser (a headless Chromium worked
+      on 2026-11-19, after first loading the NSFG documentation page for the cycle), save the PDF in data/raw/cdc/,
+      and convert it with `pdftotext -layout` to the path.
+    fetched_on: '2026-11-19'
+    sha256: e8ef24cb6575efbd38745c1620bc7fb414fafb510ab64e54baf747e93b7dd281
+    bytes: 37237
+    note: Converted from the PDF with `pdftotext -layout`; the checksum is of the text.
+  - id: nsfg-2017-2019-male-codebook-k
+    title: 2017-2019 NSFG codebook, Male SectionK, as text
+    kind: codebook
+    format: text
+    url: https://www.cdc.gov/nchs/data/nsfg/2017-2019_NSFG_Male_SectionK_Codebook-508.pdf
+    path: data/raw/cdc/2017-2019_NSFG_Male_SectionK_Codebook-508.txt
+    releases:
+    - 2017-2019
+    redistribution: ship
+    acquisition: manual
+    manual_steps: cdc.gov returns 403 to scripts. Open the URL in a browser (a headless Chromium worked
+      on 2026-11-19, after first loading the NSFG documentation page for the cycle), save the PDF in data/raw/cdc/,
+      and convert it with `pdftotext -layout` to the path.
+    fetched_on: '2026-11-19'
+    sha256: 5ef025b24301c8096220886c5c5200defa4082285bb9b4925a38acd5b351d591
+    bytes: 107286
+    note: Converted from the PDF with `pdftotext -layout`; the checksum is of the text.
+  - id: nsfg-2017-2019-male-codebook-recodes
+    title: 2017-2019 NSFG codebook, Male SectionRecodes, as text
+    kind: codebook
+    format: text
+    url: https://www.cdc.gov/nchs/data/nsfg/2017-2019_NSFG_Male_SectionRecodes_Codebook-508.pdf
+    path: data/raw/cdc/2017-2019_NSFG_Male_SectionRecodes_Codebook-508.txt
+    releases:
+    - 2017-2019
+    redistribution: ship
+    acquisition: manual
+    manual_steps: cdc.gov returns 403 to scripts. Open the URL in a browser (a headless Chromium worked
+      on 2026-11-19, after first loading the NSFG documentation page for the cycle), save the PDF in data/raw/cdc/,
+      and convert it with `pdftotext -layout` to the path.
+    fetched_on: '2026-11-19'
+    sha256: 896218a009344ad0bfe0bb354f1b367c7d759d9a6ecd8ccb94f3ef094433bff5
+    bytes: 167294
+    note: Converted from the PDF with `pdftotext -layout`; the checksum is of the text.
+  - id: nsfg-2017-2019-male-codebook-weights
+    title: 2017-2019 NSFG codebook, Male SectionWeights, as text
+    kind: codebook
+    format: text
+    url: https://www.cdc.gov/nchs/data/nsfg/2017-2019_NSFG_Male_SectionWeights_Codebook-508.pdf
+    path: data/raw/cdc/2017-2019_NSFG_Male_SectionWeights_Codebook-508.txt
+    releases:
+    - 2017-2019
+    redistribution: ship
+    acquisition: manual
+    manual_steps: cdc.gov returns 403 to scripts. Open the URL in a browser (a headless Chromium worked
+      on 2026-11-19, after first loading the NSFG documentation page for the cycle), save the PDF in data/raw/cdc/,
+      and convert it with `pdftotext -layout` to the path.
+    fetched_on: '2026-11-19'
+    sha256: 78345a71c3d40d58be83c897aedaec390503a78debedf4c15f00ef2d76a57b24
+    bytes: 4352
+    note: Converted from the PDF with `pdftotext -layout`; the checksum is of the text.
+  - id: nsfg-2017-2019-pregnancy-codebook
+    title: 2017-2019 NSFG codebook, FemPregFile, as text
+    kind: codebook
+    format: text
+    url: https://www.cdc.gov/nchs/data/nsfg/2017-2019_NSFG_FemPregFile_Codebook-508.pdf
+    path: data/raw/cdc/2017-2019_NSFG_FemPregFile_Codebook-508.txt
+    releases:
+    - 2017-2019
+    redistribution: ship
+    acquisition: manual
+    manual_steps: cdc.gov returns 403 to scripts. Open the URL in a browser (a headless Chromium worked
+      on 2026-11-19, after first loading the NSFG documentation page for the cycle), save the PDF in data/raw/cdc/,
+      and convert it with `pdftotext -layout` to the path.
+    fetched_on: '2026-11-19'
+    sha256: 3c4fbcfbe9df397a051f332a60d8710268f0a798c8b5ca544313ede4641902b3
+    bytes: 133711
+    note: Converted from the PDF with `pdftotext -layout`; the checksum is of the text.
+  - id: nsfg-2017-2019-female-dat
+    title: 2017-2019 NSFG female file, data, fixed-width text
+    kind: data
+    format: fixed-width
+    url: https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/NSFG/2017_2019_FemRespData.dat
+    path: data/raw/2017_2019_FemRespData.dat
+    releases:
+    - 2017-2019
+    redistribution: ship
+    acquisition: automated
+    fetched_on: '2026-11-19'
+    sha256: 84494c833b85b93954164c56288aa7ccafe6c469eae33fa6a8f2a7f60f9400fc
+    bytes: 23581440
+  - id: nsfg-2017-2019-female-dct
+    title: '2017-2019 NSFG female file, Stata dictionary (.dct): columns and variable labels'
+    kind: data
+    format: stata-dictionary
+    url: https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/NSFG/stata/2017_2019_FemRespSetup.dct
+    path: data/raw/2017_2019_FemRespSetup.dct
+    releases:
+    - 2017-2019
+    redistribution: ship
+    acquisition: automated
+    fetched_on: '2026-11-19'
+    sha256: d204b4ed1d0d432655e07a69d60adafa440e04dadc685beb6f73a2ddcae5c9e5
+    bytes: 326787
+  - id: nsfg-2017-2019-male-dat
+    title: 2017-2019 NSFG male file, data, fixed-width text
+    kind: data
+    format: fixed-width
+    url: https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/NSFG/2017_2019_MaleData.dat
+    path: data/raw/2017_2019_MaleData.dat
+    releases:
+    - 2017-2019
+    redistribution: ship
+    acquisition: automated
+    fetched_on: '2026-11-19'
+    sha256: 1e11d5a59d3c6a4ab8e50c67a1c67524bc33c8bb839330154c6db759e83c2506
+    bytes: 21287334
+  - id: nsfg-2017-2019-male-dct
+    title: '2017-2019 NSFG male file, Stata dictionary (.dct): columns and variable labels'
+    kind: data
+    format: stata-dictionary
+    url: https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/NSFG/stata/2017_2019_MaleSetup.dct
+    path: data/raw/2017_2019_MaleSetup.dct
+    releases:
+    - 2017-2019
+    redistribution: ship
+    acquisition: automated
+    fetched_on: '2026-11-19'
+    sha256: 50cfbb0e3c46b216fe4274d6e36c64cca430c79a97eedaff707f7704605e97a2
+    bytes: 402579
+  - id: nsfg-2017-2019-pregnancy-dat
+    title: 2017-2019 NSFG pregnancy file, data, fixed-width text
+    kind: data
+    format: fixed-width
+    url: https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/NSFG/2017_2019_FemPregData.dat
+    path: data/raw/2017_2019_FemPregData.dat
+    releases:
+    - 2017-2019
+    redistribution: ship
+    acquisition: automated
+    fetched_on: '2026-11-19'
+    sha256: ca7ab5cd728169cf12020adee811949ee1c808fb0a0a8ca546c0dcae2d2023ed
+    bytes: 2574180
+  - id: nsfg-2017-2019-pregnancy-dct
+    title: '2017-2019 NSFG pregnancy file, Stata dictionary (.dct): columns and variable labels'
+    kind: data
+    format: stata-dictionary
+    url: https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/NSFG/stata/2017_2019_FemPregSetup.dct
+    path: data/raw/2017_2019_FemPregSetup.dct
+    releases:
+    - 2017-2019
+    redistribution: ship
+    acquisition: automated
+    fetched_on: '2026-11-19'
+    sha256: 983a7ffcbe90f5043288d9a1600d7b7aba09de79f88443099c39e04c66e004ab
+    bytes: 20405
