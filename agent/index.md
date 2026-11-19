@@ -73,4 +73,4 @@ One line per variable across all releases, joined by the links between releases:
 
 | File | Variables | Tokens |
 |---|---|---|
-| [variables.txt](variables.txt) | 95 | 3,481 |
+| [variables.txt](variables.txt) | 95 | 3,488 |
