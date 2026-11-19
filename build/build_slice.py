@@ -230,9 +230,11 @@ def load_slice():
 
 
 def build_variable(name, rel, rspec, measure, entry, col, table, codebook_src, data_src,
-                   label=None, label_src=None, block=None, questionnaire_src=None):
+                   label=None, label_src=None, block=None, questionnaire_src=None, table_names=None):
     """One record. entry is the codebook entry; label and label_src override its label (2017-2019's .dct);
-    block is the questionnaire block for this name (2022-2023)."""
+    block is the questionnaire block for this name (2022-2023); table_names maps each upper-case name in
+    the table's slice to the spelling its record uses (for flag_for)."""
+    table_names = table_names or {}
     report = []
     hand = {"origin": "hand", "author": rspec["author"], "date": rspec["date"]}
     record = {"dataset": "nsfg", "release": rel, "table": table, "name": name}
@@ -269,11 +271,15 @@ def build_variable(name, rel, rspec, measure, entry, col, table, codebook_src, d
     # Question text: the 2017-2019 codebook gives it; for 2022-2023 it's the questionnaire block.
     item_ref = entry.get("item") or (item.group(1) if item else None)
     questions_prov = None
+    # Each wording's `number` is the item number in the document the wording comes from.
     if entry.get("question"):
-        record["questions"] = [{"text": re.sub(r"\s+", " ", entry["question"]).strip()}]
+        question = {"text": re.sub(r"\s+", " ", entry["question"]).strip()}
+        if item_ref:
+            question["number"] = item_ref
+        record["questions"] = [question]
         questions_prov = {"origin": "publisher", "source": codebook_src, "location": f"{name.upper()}, item {item_ref}"}
     elif block:
-        record["questions"] = block["questions"]
+        record["questions"] = [dict(q, number=block["item"]) for q in block["questions"]]
         questions_prov = {"origin": "rule", "rule": capilite.RULE, "rule_version": capilite.RULE_VERSION,
                           "source": questionnaire_src, "location": f"{block['item']} {name.upper()}, p. {block['page']}",
                           "note": "Matched by variable name. Layout line breaks removed; one wording per IF/ELSE "
@@ -382,13 +388,16 @@ def build_variable(name, rel, rspec, measure, entry, col, table, codebook_src, d
         record["variable_type"] = vtype
         fields["variable_type"] = {"origin": "rule", "rule": "nsfg_variable_type", "rule_version": RULE_VERSION,
                                    "source": codebook_src, "note": f"From the codebook's VARIABLE TYPE {entry['variable_type']!r}."}
+    # An imputation flag's label names what it flags: "HIEDUC imputation flag", "OUTCOME Imputation Flag".
+    flag = re.match(r"^(\w+) imputation flag\b", record.get("label", ""), re.I)
+    if flag and flag.group(1).upper() in table_names:
+        record["flag_for"] = [table_names[flag.group(1).upper()]]
+        fields["flag_for"] = {"origin": "rule", "rule": "nsfg_flag_from_label", "rule_version": RULE_VERSION,
+                              "source": label_src or codebook_src,
+                              "note": "From the label, \"<NAME> imputation flag\"."}
     record["provenance"] = {"record": {"origin": "publisher", "source": codebook_src}, "fields": fields}
-
-    ext = {}
-    if item_ref:
-        ext["item"] = item_ref
-    if ext:
-        record["extensions"] = {"nsfg": ext}
+    if item_ref and "questions" not in record:
+        report.append(f"`{name}`: item {item_ref}, but no question text, so no place for the number")
     return record, report
 
 
@@ -415,6 +424,7 @@ def build_table(spec, rel, table, names, measure):
     if "questionnaire" in t:
         blocks, q_src = capilite.parse(text_of(t["questionnaire"]["path"])), t["questionnaire"]["source"]
     records, notes = [], []
+    table_names = {n.upper(): codebook.get(n.upper(), {}).get("name", n) for n in names}
     for name in names:
         entry = codebook.get(name.upper())
         if entry is None:
@@ -430,7 +440,8 @@ def build_table(spec, rel, table, names, measure):
         record, report = build_variable(record_name, rel, rspec, measure, entry, frame[upper[name.upper()]], table,
                                         entry["source"], t["data"]["source"],
                                         label=dict_labels.get(name.upper()), label_src=dct.get("source"),
-                                        block=blocks.get(name.upper()), questionnaire_src=q_src)
+                                        block=blocks.get(name.upper()), questionnaire_src=q_src,
+                                        table_names=table_names)
         records.append(record)
         notes.extend(f"`{table}/{n[1:]}" if n.startswith("`") else n for n in report)
     if rspec["codebook_format"] == "nchs":
@@ -456,7 +467,7 @@ def documentation(record):
     """What rule nsfg_identical_documentation compares: label, universe, item, question texts, coded values.
     The '.' row is left out: the codebook prints it only when some case is system missing."""
     return {"label": record.get("label"), "universe": record.get("universe"),
-            "item": record.get("extensions", {}).get("nsfg", {}).get("item"),
+            "item": next((q["number"] for q in record.get("questions", []) if q.get("number")), None),
             "questions": [norm(q["text"]) for q in record.get("questions", [])],
             "values": [(v["code"], v["label"]) for v in record.get("values", []) if v["code"] != "."]}
 
@@ -670,7 +681,7 @@ def main():
         sections += [
             f"## Release {rel}", "",
             *summaries,
-            f"- With a questionnaire item: {sum('item' in r.get('extensions', {}).get('nsfg', {}) for r in recs)} of {len(recs)}",
+            f"- With a questionnaire item number: {sum(any(q.get('number') for q in r.get('questions', [])) for r in recs)} of {len(recs)}",
             f"- With question text: {sum('questions' in r for r in recs)} of {len(recs)}",
             f"- Unresolved codes: {sum(v['kind'] == 'unresolved' for r in recs for v in r.get('values', []))}",
             "", "Missing types assigned, by number of codes:", "",

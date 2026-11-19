@@ -1,6 +1,6 @@
 {
  "pdt_version": "0.1.0",
- "inputs_sha256": "d081c3a2cbeb42e871d2dc093e808df22ae27de83e8cca7ed6e583d3912c2a6b",
+ "inputs_sha256": "4ae0a7cbfad668c43cd9ee76e55557686571597f24a2640611d4547e44e4782e",
  "dataset": "nsfg",
  "spec": "0.1.0",
  "files": [
@@ -11,13 +11,13 @@
  "losses": {
   "2022-2023": {
    "release_version": 1,
-   "variables": 52,
-   "availability": 52,
-   "provenance_fields": 328,
-   "numeric_code_labels": 42,
+   "variables": 55,
+   "availability": 55,
+   "provenance_fields": 348,
+   "numeric_code_labels": 45,
    "wordings": 4,
    "missing_codes": 48,
-   "corrections": 2,
+   "corrections": 1,
    "links": 18,
    "derived": 2
   },
@@ -25,7 +25,7 @@
    "release_version": 1,
    "variables": 49,
    "availability": 49,
-   "provenance_fields": 354,
+   "provenance_fields": 356,
    "numeric_code_labels": 39,
    "missing_codes": 34,
    "links": 18,

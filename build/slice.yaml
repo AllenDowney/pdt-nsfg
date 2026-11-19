@@ -14,7 +14,7 @@ releases:
         data: {source: nsfg-female-sas, path: NSFG-2022-2023-FemRespPUFData.sas7bdat}
         questionnaire: {source: nsfg-2022-2023-female-capilite, path: cdc/2022-2023-NSFG-Capilite-FemaleQuestionnaire.txt}
         variables:
-          design: [CaseID, WGT2022_2023, VEST, AGE_R, RSCRAGE, HISPRACE2, HIEDUC, HIEDUC_I]
+          design: [CaseID, WGT2022_2023, VEST, VECL, AGE_R, RSCRAGE, HISPRACE2, HIEDUC, HIEDUC_I]
           marital: [MARSTAT, LMARSTAT, EVRMARRY, FMARITAL, RMARITAL, FMARIT, RMARIT, SSMARCOH, CURRPRTS]
           religion: [RELIGION, ATTND14, RELDLIFE, ATTNDNOW]
           other: [POT12, SAMLIFENUM]
@@ -23,7 +23,7 @@ releases:
         data: {source: nsfg-male-sas, path: NSFG-2022-2023-MaleRespPUFData.sas7bdat}
         questionnaire: {source: nsfg-2022-2023-male-capilite, path: cdc/2022-2023-NSFG-Capilite-MaleQuestionnaire.txt}
         variables:
-          design: [CaseID, WGT2022_2023, VEST, AGE_R, HISPRACE2, HIEDUC]
+          design: [CaseID, WGT2022_2023, VEST, VECL, AGE_R, HISPRACE2, HIEDUC]
           marital: [MARSTAT, LMARSTAT, EVRMARRY, FMARITAL, RMARITAL]
           religion: [RELIGION, ATTND14, RELDLIFE, ATTNDNOW]
           other: [POT12, MFLASTP]
@@ -34,7 +34,7 @@ releases:
         variables:
           keys: [CaseID, PREGORDR]
           outcome: [OUTCOME, OUTCOME_I, BIRTHORD, BABYSEX, BIRTHWGT, agepreg, pmarpreg]
-          design: [WGT2022_2023, VEST, RELIGION]
+          design: [WGT2022_2023, VEST, VECL, RELIGION]
 
   # The same variables where they exist under the same name, plus this cycle's
   # weight and design variables (it has SECU and SEST, not VEST). Names are
@@ -92,7 +92,7 @@ measure:
   continuous: [AGE_R, RSCRAGE, agepreg, BIRTHWGT]
   count: [SAMLIFENUM, CURRPRTS, BIRTHORD]
   ordinal: [HIEDUC, ATTND14, RELDLIFE, ATTNDNOW, POT12]
-  categorical: [MFLASTP, VEST, SECU, SEST, HISPRACE2, HIEDUC_I, MARSTAT, LMARSTAT, EVRMARRY, FMARITAL, RMARITAL,
+  categorical: [MFLASTP, VEST, VECL, SECU, SEST, HISPRACE2, HIEDUC_I, MARSTAT, LMARSTAT, EVRMARRY, FMARITAL, RMARITAL,
                 FMARIT, RMARIT, SSMARCOH, RELIGION, OUTCOME, OUTCOME_I, BABYSEX, pmarpreg]
 
 # Links NCHS asserts in its "Summary of NSFG Questionnaire Changes for 2022-2023

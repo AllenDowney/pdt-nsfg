@@ -43,6 +43,15 @@ releases:
   - id: "2022-2023"
     label: NSFG 2022-2023 (cycle 12) public-use files
     status: current
+    design:
+      weights: [WGT2022_2023]
+      strata: VEST
+      psu: VECL
+      note: >
+        The codebook labels: "Final weight for the 2022-2023 NSFG", "Randomized version of Variance
+        Estimation Stratum", "Randomized version of Variance Estimation Cluster". The same names in all
+        three tables. NCHS's variance estimation examples are at
+        https://www.cdc.gov/nchs/data/nsfg/varest/2022-2023-NSFG-VarEst-all.pdf.
     sources: [nsfg-female-codebook, nsfg-female-sas, nsfg-male-codebook, nsfg-male-sas,
               nsfg-pregnancy-codebook, nsfg-pregnancy-sas, nsfg-2022-2023-female-capilite,
               nsfg-2022-2023-male-capilite, nsfg-2022-2023-quex-changes]
@@ -65,6 +74,14 @@ releases:
   - id: "2017-2019"
     label: NSFG 2017-2019 (cycle 11) public-use files
     status: current
+    design:
+      weights: [WGT2017_2019]
+      strata: SEST
+      psu: SECU
+      note: >
+        The Stata dictionaries' labels: "Final weight for the 2017-2019 NSFG", "Randomized version of
+        the stratum", "Randomized version of the sampling error computational unit". The same names in
+        all three tables.
     sources: [nsfg-2017-2019-female-codebook-screener, nsfg-2017-2019-female-codebook-a,
               nsfg-2017-2019-female-codebook-c, nsfg-2017-2019-female-codebook-i,
               nsfg-2017-2019-female-codebook-j, nsfg-2017-2019-female-codebook-recodes,

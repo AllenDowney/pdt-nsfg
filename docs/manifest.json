@@ -1,6 +1,6 @@
 {
  "pdt_version": "0.1.0",
- "inputs_sha256": "d081c3a2cbeb42e871d2dc093e808df22ae27de83e8cca7ed6e583d3912c2a6b",
+ "inputs_sha256": "4ae0a7cbfad668c43cd9ee76e55557686571597f24a2640611d4547e44e4782e",
  "dataset": "nsfg",
  "files": [
   ".nojekyll",
@@ -84,6 +84,7 @@
   "variables/2022-2023/female/RSCRAGE.html",
   "variables/2022-2023/female/SAMLIFENUM.html",
   "variables/2022-2023/female/SSMARCOH.html",
+  "variables/2022-2023/female/VECL.html",
   "variables/2022-2023/female/VEST.html",
   "variables/2022-2023/female/WGT2022_2023.html",
   "variables/2022-2023/male/AGE_R.html",
@@ -101,6 +102,7 @@
   "variables/2022-2023/male/RELDLIFE.html",
   "variables/2022-2023/male/RELIGION.html",
   "variables/2022-2023/male/RMARITAL.html",
+  "variables/2022-2023/male/VECL.html",
   "variables/2022-2023/male/VEST.html",
   "variables/2022-2023/male/WGT2022_2023.html",
   "variables/2022-2023/pregnancy/BABYSEX.html",
@@ -111,6 +113,7 @@
   "variables/2022-2023/pregnancy/OUTCOME_I.html",
   "variables/2022-2023/pregnancy/PREGORDR.html",
   "variables/2022-2023/pregnancy/RELIGION.html",
+  "variables/2022-2023/pregnancy/VECL.html",
   "variables/2022-2023/pregnancy/VEST.html",
   "variables/2022-2023/pregnancy/WGT2022_2023.html",
   "variables/2022-2023/pregnancy/agepreg.html",
