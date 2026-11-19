@@ -1,6 +1,7 @@
 standard_version: "0.1"
 id: nsfg
 title: National Survey of Family Growth
+kind: survey   # STANDARD.md §2.1: survey, administrative or portal
 publisher:
   name: National Center for Health Statistics (NCHS), CDC
   url: https://www.cdc.gov/nchs/
