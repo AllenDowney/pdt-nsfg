@@ -2,6 +2,7 @@ sources:
   - id: nsfg-female-codebook
     title: 2022-2023 NSFG Female Respondent public-use codebook, as text
     kind: codebook
+    lists_only_occurring_codes: true
     format: text
     url: https://www.cdc.gov/nchs/data/nsfg/codebooks/2022-2023-NSFG-FemRespPUFCodebook.pdf
     path: data/raw/2022-2023-FemResp-Codebook.txt
@@ -30,6 +31,7 @@ sources:
   - id: nsfg-male-codebook
     title: 2022-2023 NSFG Male Respondent public-use codebook, as text
     kind: codebook
+    lists_only_occurring_codes: true
     format: text
     url: https://www.cdc.gov/nchs/data/nsfg/codebooks/2022-2023-NSFG-MalePUFCodebook.pdf
     path: data/raw/2022-2023-Male-Codebook.txt
@@ -56,6 +58,7 @@ sources:
   - id: nsfg-pregnancy-codebook
     title: 2022-2023 NSFG Female Pregnancy public-use codebook, as text
     kind: codebook
+    lists_only_occurring_codes: true
     format: text
     url: https://www.cdc.gov/nchs/data/nsfg/codebooks/2022-2023-NSFG-FemPregPUFCodebook.pdf
     path: data/raw/2022-2023-FemPreg-Codebook.txt
@@ -140,6 +143,7 @@ sources:
   - id: nsfg-2017-2019-female-codebook-screener
     title: 2017-2019 NSFG codebook, FemResp Screener, as text
     kind: codebook
+    lists_only_occurring_codes: true
     format: text
     url: https://www.cdc.gov/nchs/data/nsfg/2017-2019_NSFG_FemResp_Screener_Codebook-508.pdf
     path: data/raw/cdc/2017-2019_NSFG_FemResp_Screener_Codebook-508.txt
@@ -158,6 +162,7 @@ sources:
   - id: nsfg-2017-2019-female-codebook-a
     title: 2017-2019 NSFG codebook, FemResp SectionA, as text
     kind: codebook
+    lists_only_occurring_codes: true
     format: text
     url: https://www.cdc.gov/nchs/data/nsfg/2017-2019_NSFG_FemResp_SectionA_Codebook-508.pdf
     path: data/raw/cdc/2017-2019_NSFG_FemResp_SectionA_Codebook-508.txt
@@ -178,6 +183,7 @@ sources:
   - id: nsfg-2017-2019-female-codebook-c
     title: 2017-2019 NSFG codebook, FemResp SectionC, as text
     kind: codebook
+    lists_only_occurring_codes: true
     format: text
     url: https://www.cdc.gov/nchs/data/nsfg/2017-2019_NSFG_FemResp_SectionC_Codebook-508.pdf
     path: data/raw/cdc/2017-2019_NSFG_FemResp_SectionC_Codebook-508.txt
@@ -196,6 +202,7 @@ sources:
   - id: nsfg-2017-2019-female-codebook-i
     title: 2017-2019 NSFG codebook, FemResp SectionI, as text
     kind: codebook
+    lists_only_occurring_codes: true
     format: text
     url: https://www.cdc.gov/nchs/data/nsfg/2017-2019_NSFG_FemResp_SectionI_Codebook-508.pdf
     path: data/raw/cdc/2017-2019_NSFG_FemResp_SectionI_Codebook-508.txt
@@ -214,6 +221,7 @@ sources:
   - id: nsfg-2017-2019-female-codebook-j
     title: 2017-2019 NSFG codebook, FemResp SectionJ, as text
     kind: codebook
+    lists_only_occurring_codes: true
     format: text
     url: https://www.cdc.gov/nchs/data/nsfg/2017-2019_NSFG_FemResp_SectionJ_Codebook-508.pdf
     path: data/raw/cdc/2017-2019_NSFG_FemResp_SectionJ_Codebook-508.txt
@@ -232,6 +240,7 @@ sources:
   - id: nsfg-2017-2019-female-codebook-recodes
     title: 2017-2019 NSFG codebook, FemResp SectionRecodes, as text
     kind: codebook
+    lists_only_occurring_codes: true
     format: text
     url: https://www.cdc.gov/nchs/data/nsfg/2017-2019_NSFG_FemResp_SectionRecodes_Codebook-508.pdf
     path: data/raw/cdc/2017-2019_NSFG_FemResp_SectionRecodes_Codebook-508.txt
@@ -250,6 +259,7 @@ sources:
   - id: nsfg-2017-2019-female-codebook-weights
     title: 2017-2019 NSFG codebook, FemResp SectionWeights, as text
     kind: codebook
+    lists_only_occurring_codes: true
     format: text
     url: https://www.cdc.gov/nchs/data/nsfg/2017-2019_NSFG_FemResp_SectionWeights_Codebook-508.pdf
     path: data/raw/cdc/2017-2019_NSFG_FemResp_SectionWeights_Codebook-508.txt
@@ -268,6 +278,7 @@ sources:
   - id: nsfg-2017-2019-male-codebook-screener
     title: 2017-2019 NSFG codebook, Male Screener, as text
     kind: codebook
+    lists_only_occurring_codes: true
     format: text
     url: https://www.cdc.gov/nchs/data/nsfg/2017-2019_NSFG_Male_Screener_Codebook-508.pdf
     path: data/raw/cdc/2017-2019_NSFG_Male_Screener_Codebook-508.txt
@@ -286,6 +297,7 @@ sources:
   - id: nsfg-2017-2019-male-codebook-a
     title: 2017-2019 NSFG codebook, Male SectionA, as text
     kind: codebook
+    lists_only_occurring_codes: true
     format: text
     url: https://www.cdc.gov/nchs/data/nsfg/2017-2019_NSFG_Male_SectionA_Codebook-508.pdf
     path: data/raw/cdc/2017-2019_NSFG_Male_SectionA_Codebook-508.txt
@@ -304,6 +316,7 @@ sources:
   - id: nsfg-2017-2019-male-codebook-j
     title: 2017-2019 NSFG codebook, Male SectionJ, as text
     kind: codebook
+    lists_only_occurring_codes: true
     format: text
     url: https://www.cdc.gov/nchs/data/nsfg/2017-2019_NSFG_Male_SectionJ_Codebook-508.pdf
     path: data/raw/cdc/2017-2019_NSFG_Male_SectionJ_Codebook-508.txt
@@ -322,6 +335,7 @@ sources:
   - id: nsfg-2017-2019-male-codebook-k
     title: 2017-2019 NSFG codebook, Male SectionK, as text
     kind: codebook
+    lists_only_occurring_codes: true
     format: text
     url: https://www.cdc.gov/nchs/data/nsfg/2017-2019_NSFG_Male_SectionK_Codebook-508.pdf
     path: data/raw/cdc/2017-2019_NSFG_Male_SectionK_Codebook-508.txt
@@ -340,6 +354,7 @@ sources:
   - id: nsfg-2017-2019-male-codebook-recodes
     title: 2017-2019 NSFG codebook, Male SectionRecodes, as text
     kind: codebook
+    lists_only_occurring_codes: true
     format: text
     url: https://www.cdc.gov/nchs/data/nsfg/2017-2019_NSFG_Male_SectionRecodes_Codebook-508.pdf
     path: data/raw/cdc/2017-2019_NSFG_Male_SectionRecodes_Codebook-508.txt
@@ -358,6 +373,7 @@ sources:
   - id: nsfg-2017-2019-male-codebook-weights
     title: 2017-2019 NSFG codebook, Male SectionWeights, as text
     kind: codebook
+    lists_only_occurring_codes: true
     format: text
     url: https://www.cdc.gov/nchs/data/nsfg/2017-2019_NSFG_Male_SectionWeights_Codebook-508.pdf
     path: data/raw/cdc/2017-2019_NSFG_Male_SectionWeights_Codebook-508.txt
@@ -376,6 +392,7 @@ sources:
   - id: nsfg-2017-2019-pregnancy-codebook
     title: 2017-2019 NSFG codebook, FemPregFile, as text
     kind: codebook
+    lists_only_occurring_codes: true
     format: text
     url: https://www.cdc.gov/nchs/data/nsfg/2017-2019_NSFG_FemPregFile_Codebook-508.pdf
     path: data/raw/cdc/2017-2019_NSFG_FemPregFile_Codebook-508.txt

@@ -121,18 +121,18 @@ hand_links:
   - tables: [female, male]
     name: EVRMARRY
     relations: [labels_changed, universe_changed]
-    author: Allen Downey
+    author: Claude (PublicDataToolkit Task 35)
     date: "2026-11-19"
-    note: Decided in PublicDataToolkit Task 35 (coordinator thread, for Allen Downey).
+    note: Decided in PublicDataToolkit Task 35 by Claude, at the coordinator thread's request.
   - tables: [female, male]
     name: FMARITAL
     relations: [labels_changed, universe_changed]
-    author: Allen Downey
+    author: Claude (PublicDataToolkit Task 35)
     date: "2026-11-19"
-    note: Decided in PublicDataToolkit Task 35 (coordinator thread, for Allen Downey).
+    note: Decided in PublicDataToolkit Task 35 by Claude, at the coordinator thread's request.
   - tables: [female]
     name: FMARIT
     relations: [labels_changed, universe_changed]
-    author: Allen Downey
+    author: Claude (PublicDataToolkit Task 35)
     date: "2026-11-19"
     note: The same change as FMARITAL's; added in PublicDataToolkit Task 35.

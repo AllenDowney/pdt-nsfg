@@ -53,14 +53,14 @@ except ImportError:
     import os, sys
     sys.path.insert(0, str(Path(os.environ.get("PDT", Path(__file__).resolve().parents[2] / "PublicDataToolkit")) / "lib"))
     from pdt.derived import scale_signatures
-from pdt.compare import compare_text
+from pdt.compare import absent_by_chance, compare_text, total_cases
 
 ROOT = Path(__file__).resolve().parent.parent
 RAW = ROOT / "data" / "raw"
 META = ROOT / "metadata"
 
 RULE_VERSION = "0.1"
-LINK_RULE, LINK_RULE_VERSION = "nsfg_identical_documentation", "0.4"
+LINK_RULE, LINK_RULE_VERSION = "nsfg_identical_documentation", "0.5"
 CHANGES_SOURCE = "nsfg-2022-2023-quex-changes"
 
 
@@ -470,11 +470,13 @@ def is_count_label(code, label):
     return isinstance(code, int) and re.match(COUNT_LABEL.format(code=code), norm(label), re.IGNORECASE) is not None
 
 
-def identical_documentation(a, b):
-    """Rule nsfg_identical_documentation 0.4: (differences, allowances, reworded count labels, label change).
+def identical_documentation(a, b, omits=(True, True)):
+    """Rule nsfg_identical_documentation 0.5: (differences, allowances, reworded count labels, label change,
+    codes changed).
 
-    No differences means a link: same_item, or labels_changed when the variable's label
-    changed (the fourth value, both labels, which the link's note quotes). Texts are
+    No differences means a link: same_item, labels_changed when the variable's label
+    changed (the fourth value, both labels, which the link's note quotes), and
+    codes_changed when codes were added or dropped (the fifth value). Texts are
     compared with pdt.compare: a difference only in case, spacing or dashes (text_only),
     or in questionnaire item references and type markers such as "IC-9", "(Computed in
     FC A-2b)" or "(RECODE)" (reference_only), isn't a change, and each link's note lists
@@ -482,6 +484,15 @@ def identical_documentation(a, b):
     one release's codes are a subset of the other's (the NSFG codebooks list only codes
     that occur in the data). A universe that changed blocks the link: whether the
     population changed is for a person to say.
+
+    Codes on one side only (0.5): allowed when the code is inside the other release's
+    valid_range (2017-2019 prints AGE_R 49 and 50 as one range row), or when the other
+    release's codebook lists only codes that occur (sources.yaml lists_only_occurring_codes;
+    omits) and the code's count makes zero cases there plausible (pdt.compare.absent_by_chance:
+    PREGORDR 15, 1 case). Any other one-sided code is a change of codes: the link is
+    codes_changed (OUTCOME_I's "multiple regression imputation", 7 cases in 2017-2019, none
+    after), instead of no link. 0.4 allowed one-sided codes when one release's codes were a
+    subset of the other's, which would have called a recoding "no cases".
 
     0.4 compares the variable label and the universe, which 0.3 left out. Under 0.3,
     EVRMARRY ("Whether R was ever married" / "Ever married to an opposite-sex spouse")
@@ -524,15 +535,24 @@ def identical_documentation(a, b):
         diffs.append(f"value labels differ for codes {changed}")
     for h in sorted({h for h in value_hows.values() if h != "changed"}):
         note_allowed("value labels", h)
-    only_a, only_b = sorted(set(ca) - set(cb), key=str), sorted(set(cb) - set(ca), key=str)
-    if only_a and only_b:
-        diffs.append(f"codes changed (only in {a['release']}: {only_a}; only in {b['release']}: {only_b})")
-    elif only_a or only_b:
-        lacking, rel = (only_a, b["release"]) if only_a else (only_b, a["release"])
-        allowed.append(f"codes {lacking} aren't in the {rel} codebook (no cases)")
+    n_of = [{v["code"]: v.get("n") for v in r.get("values", [])} for r in (a, b)]
+    totals = (total_cases(a), total_cases(b))
+    codes_changed = []
+    for side, code in [(0, c) for c in sorted(set(ca) - set(cb), key=str)] + \
+                      [(1, c) for c in sorted(set(cb) - set(ca), key=str)]:
+        other = (b, a)[side]
+        n = n_of[side].get(code)
+        vr = other.get("valid_range") or {}
+        if isinstance(code, (int, float)) and vr.get("min") is not None and vr["min"] <= code <= vr["max"]:
+            allowed.append(f"code {code} is in {other['release']}'s range {vr['min']}-{vr['max']}")
+        elif omits[1 - side] and absent_by_chance(n, totals[side], totals[1 - side]):
+            allowed.append(f"code {code} isn't in the {other['release']} codebook ({n} case(s) in "
+                           f"{(a, b)[side]['release']}, so none there is plausible)")
+        else:
+            codes_changed.append(f"{code} only in {(a, b)[side]['release']} ({n} case(s))")
     if da["item"] != db["item"]:
         allowed.append(f"item reference {da['item']} in {a['release']}, {db['item']} in {b['release']}")
-    return diffs, allowed, (counts if changed and counts == changed else []), label_change
+    return diffs, allowed, (counts if changed and counts == changed else []), label_change, codes_changed
 
 
 def build_links(spec, by_key):
@@ -571,6 +591,8 @@ def build_links(spec, by_key):
             done.add((table, hl["name"].upper()))
             hand.append(f"`{table}/{hl['name']}`")
 
+    occurring = {s["id"]: s.get("lists_only_occurring_codes")
+                 for s in yaml.safe_load((ROOT / "sources.yaml").read_text())["sources"]}
     caveat = ("NCHS doesn't assert this, and its 2022-2023 FAQ cautions against comparing 2022-2023 with earlier "
               "cycles because of the multimode design.")
     shared = sorted((t, n) for (rel, t, n) in by_key if rel == new and (old, t, n) in by_key)
@@ -579,20 +601,24 @@ def build_links(spec, by_key):
         if (table, name) in done:
             continue
         a, b = by_key[(old, table, name)], by_key[(new, table, name)]
-        diffs, allowed, counts, label_change = identical_documentation(a, b)
+        omits = (bool(occurring.get(a["source_location"]["source"])),
+                 bool(occurring.get(b["source_location"]["source"])))
+        diffs, allowed, counts, label_change, codes_changed = identical_documentation(a, b, omits)
+        codes_note = (f" Codes changed: {'; '.join(codes_changed)}." if codes_changed else "")
         sources = f"({a['source_location']['source']} and {b['source_location']['source']})"
         label_note = (f" The variable's label changed: {label_change[0]!r} in {old}, {label_change[1]!r} in {new}."
                       if label_change else "")
         allowed_note = (" Allowed by the rule: " + "; ".join(allowed) + ".") if allowed else ""
         if not diffs:
-            relations = ["labels_changed"] if label_change else ["same_item"]
+            relations = (["codes_changed"] if codes_changed else []) + (["labels_changed"] if label_change else [])
+            relations = relations or ["same_item"]
             link = {"from": ref(a), "to": ref(b), "relations": relations,
                     "origin": {"origin": "rule", "rule": LINK_RULE, "rule_version": LINK_RULE_VERSION,
                                "source": b["source_location"]["source"],
                                "note": "Same name (ignoring case), universe, question text and value labels in both "
                                        f"cycles' NCHS documentation {sources}. {caveat}"}}
-            if allowed or label_change:
-                link["note"] = (label_note + allowed_note).strip()
+            if allowed or label_change or codes_changed:
+                link["note"] = (codes_note + label_note + allowed_note).strip()
             links.append(link)
             linked.append(f"`{table}/{name}` ({', '.join(relations)})" + (f": {'; '.join(allowed)}" if allowed else ""))
             continue
@@ -600,17 +626,19 @@ def build_links(spec, by_key):
         # value label that differs is a count label in both cycles ("15 years" vs "15"): the same count, reworded.
         other = [d for d in diffs if not d.startswith("value labels differ")]
         if counts and not other:
-            links.append({"from": ref(a), "to": ref(b), "relations": ["labels_changed"],
+            links.append({"from": ref(a), "to": ref(b),
+                          "relations": (["codes_changed"] if codes_changed else []) + ["labels_changed"],
                           "origin": {"origin": "rule", "rule": COUNT_RULE, "rule_version": COUNT_RULE_VERSION,
                                      "source": b["source_location"]["source"],
                                      "note": "The documentation is the same in both cycles' NCHS codebooks "
                                              f"{sources} as rule {LINK_RULE} {LINK_RULE_VERSION} compares it, except "
                                              "that value labels for counts are worded differently: the code alone, or "
                                              f"with an ordinal or a unit ('15' vs '15 years'). {caveat}"},
-                          "note": (f"Count labels reworded for codes {counts}." + label_note + allowed_note).strip()})
+                          "note": (f"Count labels reworded for codes {counts}." + codes_note + label_note
+                                   + allowed_note).strip()})
             reworded.append(f"`{table}/{name}`" + (f" ({'; '.join(allowed)})" if allowed else ""))
             continue
-        unlinked.append(f"- `{table}/{name}`: {'; '.join(diffs)}"
+        unlinked.append(f"- `{table}/{name}`: {'; '.join(diffs + (['codes changed: ' + '; '.join(codes_changed)] if codes_changed else []))}"
                         + (f" (allowed: {'; '.join(allowed)})" if allowed else ""))
     lines = [f"- From NCHS's summary of questionnaire changes: {len(done) - len(hand)}",
              f"- Entered by hand (slice.yaml hand_links): {len(hand)}: {', '.join(hand) or 'none'}",
