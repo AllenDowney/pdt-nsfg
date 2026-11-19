@@ -1,0 +1,22 @@
+# The snake_case slice of the NSFG (PublicDataToolkit Task 5, preliminary).
+# Female respondent file only: the standard has no level for several files in
+# one release (see the PublicDataToolkit board).
+
+release: "2022-2023"
+author: Allen Downey
+date: "2026-11-19"
+
+variables:
+  design: [CaseID, WGT2022_2023, VEST, AGE_R, RSCRAGE, HISPRACE2, HIEDUC, HIEDUC_I]
+  marital: [MARSTAT, LMARSTAT, EVRMARRY, FMARITAL, RMARITAL, FMARIT, RMARIT, SSMARCOH, CURRPRTS]
+  religion: [RELIGION, ATTND14, RELDLIFE, ATTNDNOW]
+  other: [POT12, SAMLIFENUM]
+
+measure:
+  identifier: [CaseID]
+  weight: [WGT2022_2023]
+  continuous: [AGE_R, RSCRAGE]
+  count: [SAMLIFENUM, CURRPRTS]
+  ordinal: [HIEDUC, ATTND14, RELDLIFE, ATTNDNOW, POT12]
+  categorical: [VEST, HISPRACE2, HIEDUC_I, MARSTAT, LMARSTAT, EVRMARRY, FMARITAL, RMARITAL,
+                FMARIT, RMARIT, SSMARCOH, RELIGION]

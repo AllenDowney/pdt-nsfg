@@ -1,0 +1,42 @@
+standard_version: "0.1"
+id: nsfg
+title: National Survey of Family Growth
+publisher:
+  name: National Center for Health Statistics (NCHS), CDC
+  url: https://www.cdc.gov/nchs/
+url: https://www.cdc.gov/nchs/nsfg/
+description: >
+  A survey of US men and women aged 15-49 about family life, marriage and
+  divorce, pregnancy, infertility, contraception, and health. Released in
+  cycles; cycle 12 is 2022-2023.
+citation: >
+  National Center for Health Statistics, National Survey of Family Growth,
+  2022-2023.
+terms:
+  url: https://www.cdc.gov/nchs/policy/data-user-agreement.html
+  summary: >
+    The NCHS Data User Agreement for public-use files (also in the 2022-2023
+    User's Guide, pp. 4-5) restricts use to statistical reporting and analysis
+    and forbids identifying anyone, linking to identifiable data, and research
+    on re-identification; none of its terms concerns redistribution. NCHS
+    documentation is a US government work in the public domain. Allen Downey
+    reviewed this in MarriageNSFG Task 20 (2026-11-10); recorded here from that
+    review, pending his confirmation for this repo.
+  data: ship
+  documentation: ship
+  metadata: ship
+  llm_processing: allowed
+  reviewed_by: Allen Downey
+  reviewed_on: "2026-11-10"
+naming:
+  case: upper
+  note: The codebook writes names in uppercase; the SAS data file uses mixed case for a few (CaseID).
+dimensions:
+  wave:
+    label: cycle
+    note: Cycle 12 is 2022-2023. Earlier cycles are 3 (1982) to 11 (2017-2019).
+releases:
+  - id: "2022-2023"
+    label: NSFG 2022-2023 (cycle 12) public-use files, female respondent file
+    status: current
+    sources: [nsfg-femresp-codebook, nsfg-femresp-sas]

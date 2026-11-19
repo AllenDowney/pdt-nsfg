@@ -1,0 +1,28 @@
+sources:
+  - id: nsfg-femresp-codebook
+    title: 2022-2023 NSFG Female Respondent public-use codebook, as text
+    kind: codebook
+    format: text
+    url: https://www.cdc.gov/nchs/data/nsfg/codebooks/2022-2023-NSFG-FemRespPUFCodebook.pdf
+    path: data/raw/2022-2023-FemResp-Codebook.txt
+    releases: ["2022-2023"]
+    redistribution: ship
+    acquisition: automated
+    fetched_on: "2026-09-20"
+    sha256: 5c1dad64cf33da4ce92b917cf6426a4268db88bbdacd2dba3bc0fd1980174ab8
+    bytes: 2008504
+    note: >
+      Converted from the PDF with `pdftotext -layout` by MarriageNSFG's
+      scripts/fetch_codebooks.py; the checksum is of the text.
+  - id: nsfg-femresp-sas
+    title: 2022-2023 NSFG Female Respondent public-use data, SAS
+    kind: data
+    format: sas7bdat
+    url: https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/NSFG/NSFG-2022-2023-FemRespPUFData.sas7bdat
+    path: data/raw/NSFG-2022-2023-FemRespPUFData.sas7bdat
+    releases: ["2022-2023"]
+    redistribution: ship
+    acquisition: automated
+    fetched_on: "2024-12-11"
+    sha256: a4666d3e35234cde35c17d411c665597b62e2c076c7c48c7a21b3bc49a343315
+    bytes: 86384640
