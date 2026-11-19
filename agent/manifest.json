@@ -251,5 +251,12 @@
     }
    ]
   }
+ ],
+ "across_releases": [
+  {
+   "path": "variables.txt",
+   "variables": 95,
+   "tokens": 3481
+  }
  ]
 }

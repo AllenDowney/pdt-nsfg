@@ -66,3 +66,11 @@ Line form: `name | waves by form | scale signature | label | question text`. A r
 | Shard | Variables | Completeness | Tokens (txt / jsonl) | Basis |
 |---|---|---|---|---|
 | [Scale signature: yes_no](shards/scale/yes-no.txt) | 2 | `complete_by_rule` | 221 / 729 | variables with this scale signature in the current release (2022-2023, 2017-2019) |
+
+## Across releases
+
+One line per variable across all releases, joined by the links between releases: names and the releases each had ("ADDEPEV2 2011–2018 → ADDEPEV3 2019–2023"). A change of meaning (codes, wording or universe) gives a second line, marked ↳, under the first. Search by subject, group or release in the shards above; use this to see how a variable runs across releases.
+
+| File | Variables | Tokens |
+|---|---|---|
+| [variables.txt](variables.txt) | 95 | 3,481 |
