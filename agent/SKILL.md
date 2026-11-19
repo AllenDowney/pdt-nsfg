@@ -43,7 +43,20 @@ same variables, report the stronger label (`complete`, then `complete_by_rule`, 
 
 If the shared library is installed, `pdt search PATH --filter '<json>'` runs a filter and
 prints a labeled result, e.g. `--filter '{"subject": "Abortion"}'`. Filter keys: `release`,
-`table`, `name`, `group`, `subject`, `topic`, `derived`, `field`, `text`.
+`table`, `name`, `group`, `subject`, `topic`, `derived`, `available`, `field`, `text`.
+Several keys in one filter must all match.
+
+For a question about when or to whom a variable was asked ("every item on form A in 1988",
+"thermometers asked in 1978"), use `available`, not your own reading of the shards:
+
+    pdt search PATH --filter '{"available": {"wave": 1988, "form": "A"}}'
+    pdt search PATH --filter '{"derived": {"scale_signature": "thermometer"}, "available": {"wave": 1978}}'
+
+`available` matches a variable with an availability entry for that wave on that form, or with
+no form (everyone in that wave was asked); leave out `form` for "asked at all in that wave".
+It is `complete` when availability comes from the publisher or the data file. Picking the
+same variables by reading a shard gives the same list but is `approximate`, because you made
+the selection; if you can't run `pdt search`, say so and label it `approximate`.
 
 ## Rules
 

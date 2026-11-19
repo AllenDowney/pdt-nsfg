@@ -19,6 +19,12 @@ Dimensions: `wave` is the cycle.
 | `2022-2023` | male | 17 | NSFG 2022-2023 (cycle 12) public-use files |
 | `2022-2023` | pregnancy | 12 | NSFG 2022-2023 (cycle 12) public-use files |
 
+Tables in `2022-2023`: the key identifies a row; a reference says which columns join to another table, and when.
+
+- `female`: Female respondents. Key: CaseID
+- `male`: Male respondents. Key: CaseID
+- `pregnancy`: Pregnancies reported by female respondents. Key: CaseID, PREGORDR. References: CaseID -> female
+
 ## How the shards are organized
 
 Every shard is the result of a filter over the records, and its header says which filter and what completeness label it supports. Each shard comes in two forms with the same variables: `.txt`, one line per variable, for scanning; and `.jsonl`, the records with corrections applied, for details. The first JSONL line is the shard's header (`{"shard": ...}`); every later line is a variable. A shard too big to read at once (about 20,000 tokens) is split into parts.
