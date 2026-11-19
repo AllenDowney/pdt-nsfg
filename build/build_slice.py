@@ -27,8 +27,9 @@ Where each field comes from:
   the NSFG codebook doesn't mark missing codes (rule nsfg_missing_from_labels)
 
 Links between the releases (STANDARD.md §5.2): the ones NCHS's summary of
-questionnaire changes asserts (slice.yaml publisher_links), and the rule
-nsfg_identical_documentation (see identical_documentation below).
+questionnaire changes asserts (slice.yaml publisher_links), links entered by
+hand (slice.yaml hand_links), and the rule nsfg_identical_documentation (see
+identical_documentation below).
 """
 
 import collections
@@ -52,13 +53,14 @@ except ImportError:
     import os, sys
     sys.path.insert(0, str(Path(os.environ.get("PDT", Path(__file__).resolve().parents[2] / "PublicDataToolkit")) / "lib"))
     from pdt.derived import scale_signatures
+from pdt.compare import compare_text
 
 ROOT = Path(__file__).resolve().parent.parent
 RAW = ROOT / "data" / "raw"
 META = ROOT / "metadata"
 
 RULE_VERSION = "0.1"
-LINK_RULE, LINK_RULE_VERSION = "nsfg_identical_documentation", "0.3"
+LINK_RULE, LINK_RULE_VERSION = "nsfg_identical_documentation", "0.4"
 CHANGES_SOURCE = "nsfg-2022-2023-quex-changes"
 
 
@@ -299,12 +301,12 @@ def build_variable(name, rel, rspec, measure, entry, col, table, codebook_src, d
         documented.add(code)
         types = missing_types(row_label)
         if types:
-            values.append({"code": code, "label": row_label, "kind": "missing", "missing_types": types,
+            values.append({"code": code, "label": row_label, "kind": "missing", "missing_types": types, "n": n,
                            "origin": {"origin": "rule", "rule": "nsfg_missing_from_labels", "rule_version": RULE_VERSION,
                                       "source": codebook_src,
                                       "note": "The codebook doesn't mark missing codes; kind and type from the label."}})
         else:
-            values.append({"code": code, "label": row_label, "kind": "valid"})
+            values.append({"code": code, "label": row_label, "kind": "valid", "n": n})
             n_valid += n
             if code == "." :
                 report.append(f"`{name}`: '.' labeled {row_label!r}, not recognized as missing")
@@ -451,9 +453,10 @@ def norm(text):
 
 
 def documentation(record):
-    """What rule nsfg_identical_documentation compares: item, question texts, and coded values.
+    """What rule nsfg_identical_documentation compares: label, universe, item, question texts, coded values.
     The '.' row is left out: the codebook prints it only when some case is system missing."""
-    return {"item": record.get("extensions", {}).get("nsfg", {}).get("item"),
+    return {"label": record.get("label"), "universe": record.get("universe"),
+            "item": record.get("extensions", {}).get("nsfg", {}).get("item"),
             "questions": [norm(q["text"]) for q in record.get("questions", [])],
             "values": [(v["code"], v["label"]) for v in record.get("values", []) if v["code"] != "."]}
 
@@ -468,40 +471,59 @@ def is_count_label(code, label):
 
 
 def identical_documentation(a, b):
-    """Rule nsfg_identical_documentation 0.3: return (differences, allowances, reworded count labels).
+    """Rule nsfg_identical_documentation 0.4: (differences, allowances, reworded count labels, label change).
 
-    No differences means same_item. Same name (ignoring case), the same question
-    text where either record has one, and the same labels for the codes both
-    codebooks list, in both cycles' NCHS documentation. Three things that are
-    artifacts of the documentation, not changes to the item, are allowed, and each
-    link's note lists the ones it used:
-    - labels that differ only in case (2017-2019 prints recode labels in capitals);
-    - codes listed by only one codebook, when one release's codes are a subset of
-      the other's: the NSFG codebooks list only codes that occur in the data, so a
-      code nobody gave is missing from that cycle's codebook. When each side has
-      codes the other lacks, the codes changed, and this doesn't apply;
-    - different item references, when nothing else differs (sections were renumbered).
-    NCHS doesn't assert any of this, and its 2022-2023 FAQ cautions against
-    comparing 2022-2023 with earlier cycles because of the multimode design, so
-    links from this rule have origin: rule. 0.1 allowed none of the three; 0.2
-    allowed one-sided codes on both sides at once.
+    No differences means a link: same_item, or labels_changed when the variable's label
+    changed (the fourth value, both labels, which the link's note quotes). Texts are
+    compared with pdt.compare: a difference only in case, spacing or dashes (text_only),
+    or in questionnaire item references and type markers such as "IC-9", "(Computed in
+    FC A-2b)" or "(RECODE)" (reference_only), isn't a change, and each link's note lists
+    the ones it allowed. Also allowed, as in 0.3: codes listed by only one codebook, when
+    one release's codes are a subset of the other's (the NSFG codebooks list only codes
+    that occur in the data). A universe that changed blocks the link: whether the
+    population changed is for a person to say.
 
-    The third return value lists the codes whose labels differ only as count labels
-    ("15 years" vs "15"); rule nsfg_count_labels_reworded uses it."""
+    0.4 compares the variable label and the universe, which 0.3 left out. Under 0.3,
+    EVRMARRY ("Whether R was ever married" / "Ever married to an opposite-sex spouse")
+    linked as same_item. NCHS doesn't assert any of this, and its 2022-2023 FAQ cautions
+    against comparing 2022-2023 with earlier cycles because of the multimode design, so
+    links from this rule have origin: rule.
+
+    The third value lists the codes whose labels differ only as count labels ("15 years"
+    vs "15"); rule nsfg_count_labels_reworded uses it."""
     da, db = documentation(a), documentation(b)
     diffs, allowed = [], []
-    if da["questions"] != db["questions"]:
-        if not da["questions"] or not db["questions"]:
-            diffs.append("question text in only one release")
-        else:
-            diffs.append("question text differs")
+
+    def note_allowed(what, how):
+        if how in ("text_only", "reference_only"):
+            verb = "differ" if what.endswith("s") else "differs"
+            allowed.append(f"{what} {verb} only in " + ("case, spacing or dashes" if how == "text_only"
+                                                         else "item references or type markers"))
+
+    hows = [compare_text(x, y) for x, y in zip(da["questions"], db["questions"])]
+    if len(da["questions"]) != len(db["questions"]):
+        diffs.append("question text in only one release" if not da["questions"] or not db["questions"]
+                     else "number of question texts differs")
+    elif "changed" in hows:
+        diffs.append("question text differs")
+    else:
+        for how in set(hows):
+            note_allowed("question text", how)
+    how = compare_text(da["universe"], db["universe"])
+    if how == "changed":
+        diffs.append("universe differs")
+    note_allowed("universe", how)
+    how = compare_text(da["label"], db["label"])
+    label_change = (da["label"], db["label"]) if how == "changed" else None
+    note_allowed("label", how)
     ca, cb = dict(da["values"]), dict(db["values"])
-    changed = sorted((c for c in set(ca) & set(cb) if norm(ca[c]).casefold() != norm(cb[c]).casefold()), key=str)
+    value_hows = {c: compare_text(ca[c], cb[c]) for c in set(ca) & set(cb)}
+    changed = sorted((c for c, h in value_hows.items() if h == "changed"), key=str)
     counts = [c for c in changed if is_count_label(c, ca[c]) and is_count_label(c, cb[c])]
     if changed:
-        diffs.append(f"labels differ for codes {changed}")
-    if any(ca[c] != cb[c] for c in set(ca) & set(cb)) and not changed:
-        allowed.append("labels differ only in case")
+        diffs.append(f"value labels differ for codes {changed}")
+    for h in sorted({h for h in value_hows.values() if h != "changed"}):
+        note_allowed("value labels", h)
     only_a, only_b = sorted(set(ca) - set(cb), key=str), sorted(set(cb) - set(ca), key=str)
     if only_a and only_b:
         diffs.append(f"codes changed (only in {a['release']}: {only_a}; only in {b['release']}: {only_b})")
@@ -509,11 +531,8 @@ def identical_documentation(a, b):
         lacking, rel = (only_a, b["release"]) if only_a else (only_b, a["release"])
         allowed.append(f"codes {lacking} aren't in the {rel} codebook (no cases)")
     if da["item"] != db["item"]:
-        if diffs:
-            diffs.insert(0, f"item {da['item']} vs {db['item']}")
-        else:
-            allowed.append(f"item reference {da['item']} in {a['release']}, {db['item']} in {b['release']}")
-    return diffs, allowed, (counts if changed and counts == changed else [])
+        allowed.append(f"item reference {da['item']} in {a['release']}, {db['item']} in {b['release']}")
+    return diffs, allowed, (counts if changed and counts == changed else []), label_change
 
 
 def build_links(spec, by_key):
@@ -536,6 +555,22 @@ def build_links(spec, by_key):
                           "note": norm(pl["note"])})
             done.add((table, pl["from"].upper()))
 
+    hand = []
+    for hl in spec.get("hand_links", []):
+        for table in hl["tables"]:
+            a, b = by_key.get((old, table, hl["name"].upper())), by_key.get((new, table, hl["name"].upper()))
+            if not (a and b):
+                lines.append(f"- hand link {table}/{hl['name']}: a record is missing")
+                continue
+            links.append({"from": ref(a), "to": ref(b), "relations": hl["relations"],
+                          "origin": {"origin": "hand", "author": hl["author"], "date": hl["date"],
+                                     "source": b["source_location"]["source"],
+                                     "note": "The labels quoted are from both cycles' codebooks."},
+                          "note": f"Label in {old}: {a.get('label')!r}; in {new}: {b.get('label')!r}. "
+                                  + norm(hl.get("note", ""))})
+            done.add((table, hl["name"].upper()))
+            hand.append(f"`{table}/{hl['name']}`")
+
     caveat = ("NCHS doesn't assert this, and its 2022-2023 FAQ cautions against comparing 2022-2023 with earlier "
               "cycles because of the multimode design.")
     shared = sorted((t, n) for (rel, t, n) in by_key if rel == new and (old, t, n) in by_key)
@@ -544,26 +579,27 @@ def build_links(spec, by_key):
         if (table, name) in done:
             continue
         a, b = by_key[(old, table, name)], by_key[(new, table, name)]
-        diffs, allowed, counts = identical_documentation(a, b)
+        diffs, allowed, counts, label_change = identical_documentation(a, b)
         sources = f"({a['source_location']['source']} and {b['source_location']['source']})"
+        label_note = (f" The variable's label changed: {label_change[0]!r} in {old}, {label_change[1]!r} in {new}."
+                      if label_change else "")
+        allowed_note = (" Allowed by the rule: " + "; ".join(allowed) + ".") if allowed else ""
         if not diffs:
-            link = {"from": ref(a), "to": ref(b), "relations": ["same_item"],
+            relations = ["labels_changed"] if label_change else ["same_item"]
+            link = {"from": ref(a), "to": ref(b), "relations": relations,
                     "origin": {"origin": "rule", "rule": LINK_RULE, "rule_version": LINK_RULE_VERSION,
                                "source": b["source_location"]["source"],
-                               "note": "Same name (ignoring case), question text and value labels in both cycles' NCHS "
-                                       f"documentation {sources}. {caveat}"}}
-            if allowed:
-                link["note"] = "Allowed by the rule: " + "; ".join(allowed) + "."
+                               "note": "Same name (ignoring case), universe, question text and value labels in both "
+                                       f"cycles' NCHS documentation {sources}. {caveat}"}}
+            if allowed or label_change:
+                link["note"] = (label_note + allowed_note).strip()
             links.append(link)
-            linked.append(f"`{table}/{name}`" + (f" ({'; '.join(allowed)})" if allowed else ""))
+            linked.append(f"`{table}/{name}` ({', '.join(relations)})" + (f": {'; '.join(allowed)}" if allowed else ""))
             continue
         # Rule nsfg_count_labels_reworded: everything else passes nsfg_identical_documentation, and every
-        # label that differs is a count label in both cycles ("15 years" vs "15"): the same count, reworded.
-        other = [d for d in diffs if not d.startswith(("labels differ", "item "))]
+        # value label that differs is a count label in both cycles ("15 years" vs "15"): the same count, reworded.
+        other = [d for d in diffs if not d.startswith("value labels differ")]
         if counts and not other:
-            if any(d.startswith("item ") for d in diffs):
-                da, db = documentation(a), documentation(b)
-                allowed.append(f"item reference {da['item']} in {a['release']}, {db['item']} in {b['release']}")
             links.append({"from": ref(a), "to": ref(b), "relations": ["labels_changed"],
                           "origin": {"origin": "rule", "rule": COUNT_RULE, "rule_version": COUNT_RULE_VERSION,
                                      "source": b["source_location"]["source"],
@@ -571,14 +607,14 @@ def build_links(spec, by_key):
                                              f"{sources} as rule {LINK_RULE} {LINK_RULE_VERSION} compares it, except "
                                              "that value labels for counts are worded differently: the code alone, or "
                                              f"with an ordinal or a unit ('15' vs '15 years'). {caveat}"},
-                          "note": f"Count labels reworded for codes {counts}."
-                                  + (" Allowed by the rule: " + "; ".join(allowed) + "." if allowed else "")})
+                          "note": (f"Count labels reworded for codes {counts}." + label_note + allowed_note).strip()})
             reworded.append(f"`{table}/{name}`" + (f" ({'; '.join(allowed)})" if allowed else ""))
             continue
         unlinked.append(f"- `{table}/{name}`: {'; '.join(diffs)}"
                         + (f" (allowed: {'; '.join(allowed)})" if allowed else ""))
-    lines = [f"- From NCHS's summary of questionnaire changes: {len(done)}",
-             f"- By rule `{LINK_RULE}` {LINK_RULE_VERSION} (same_item): {len(linked)}: {', '.join(linked) or 'none'}",
+    lines = [f"- From NCHS's summary of questionnaire changes: {len(done) - len(hand)}",
+             f"- Entered by hand (slice.yaml hand_links): {len(hand)}: {', '.join(hand) or 'none'}",
+             f"- By rule `{LINK_RULE}` {LINK_RULE_VERSION}: {len(linked)}: {', '.join(linked) or 'none'}",
              f"- By rule `{COUNT_RULE}` {COUNT_RULE_VERSION} (labels_changed): {len(reworded)}: "
              f"{', '.join(reworded) or 'none'}",
              f"- Shared names left unlinked: {len(unlinked)}", "", *unlinked] + (lines and ["", *lines])

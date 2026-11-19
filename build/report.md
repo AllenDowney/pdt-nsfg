@@ -57,26 +57,31 @@ None.
 ## Links from 2017-2019 to 2022-2023
 
 - From NCHS's summary of questionnaire changes: 2
-- By rule `nsfg_identical_documentation` 0.3 (same_item): 14: `female/CASEID`, `female/EVRMARRY` (labels differ only in case), `female/FMARIT` (labels differ only in case), `female/FMARITAL` (labels differ only in case), `female/RELDLIFE` (labels differ only in case; item reference IC-9 in 2017-2019, IC-7 in 2022-2023), `male/CASEID`, `male/EVRMARRY` (labels differ only in case), `male/FMARITAL` (labels differ only in case), `male/RELDLIFE` (item reference JB-9 in 2017-2019, JB-7 in 2022-2023), `male/RELIGION`, `pregnancy/AGEPREG` (codes [97] aren't in the 2017-2019 codebook (no cases)), `pregnancy/CASEID`, `pregnancy/OUTCOME_I` (codes [1] aren't in the 2022-2023 codebook (no cases)), `pregnancy/PMARPREG` (labels differ only in case)
-- By rule `nsfg_count_labels_reworded` 0.1 (labels_changed): 5: `female/AGE_R` (codes [49, 50] aren't in the 2017-2019 codebook (no cases)), `female/RSCRAGE`, `male/AGE_R` (codes [49, 50] aren't in the 2017-2019 codebook (no cases)), `pregnancy/BIRTHORD`, `pregnancy/PREGORDR` (codes [15, 16] aren't in the 2017-2019 codebook (no cases))
-- Shared names left unlinked: 19
+- Entered by hand (slice.yaml hand_links): 5: `female/EVRMARRY`, `male/EVRMARRY`, `female/FMARITAL`, `male/FMARITAL`, `female/FMARIT`
+- By rule `nsfg_identical_documentation` 0.4: 6: `female/CASEID` (same_item), `male/CASEID` (same_item), `male/RELIGION` (same_item): label differs only in item references or type markers, `pregnancy/AGEPREG` (labels_changed): codes [97] aren't in the 2017-2019 codebook (no cases), `pregnancy/OUTCOME_I` (same_item): label differs only in case, spacing or dashes; codes [1] aren't in the 2022-2023 codebook (no cases), `pregnancy/PMARPREG` (labels_changed): value labels differ only in case, spacing or dashes
+- By rule `nsfg_count_labels_reworded` 0.1 (labels_changed): 4: `female/AGE_R` (label differs only in item references or type markers; codes [49, 50] aren't in the 2017-2019 codebook (no cases)), `female/RSCRAGE`, `male/AGE_R` (label differs only in item references or type markers; codes [49, 50] aren't in the 2017-2019 codebook (no cases)), `pregnancy/PREGORDR` (codes [15, 16] aren't in the 2017-2019 codebook (no cases))
+- Shared names left unlinked: 23
 
-- `female/ATTND14`: item IC-4 vs IC-3; question text differs (allowed: labels differ only in case)
-- `female/ATTNDNOW`: item IC-10 vs IC-8; question text differs (allowed: labels differ only in case)
-- `female/CURRPRTS`: labels differ for codes [0, 1] (allowed: codes [2, 3] aren't in the 2017-2019 codebook (no cases))
-- `female/HIEDUC`: labels differ for codes [10, 11, 5, 6, 7, 8, 9]; codes changed (only in 2017-2019: [12, 13, 14, 15]; only in 2022-2023: [1, 2, 3, 4])
-- `female/HIEDUC_I`: codes changed (only in 2017-2019: [1]; only in 2022-2023: [2])
-- `female/HISPRACE2`: labels differ for codes [1]
-- `female/POT12`: question text differs (allowed: labels differ only in case; codes [7] aren't in the 2022-2023 codebook (no cases))
-- `female/RELIGION`: labels differ for codes [4]
-- `female/RMARITAL`: labels differ for codes [2, 5, 6]
-- `female/SAMLIFENUM`: labels differ for codes [1, 10, 2, 3, 4, 5, 6, 7, 8, 9] (allowed: codes [997] aren't in the 2022-2023 codebook (no cases))
-- `male/ATTND14`: item JB-4 vs JB-3; question text differs (allowed: codes [8] aren't in the 2017-2019 codebook (no cases))
-- `male/ATTNDNOW`: item JB-10 vs JB-8; question text differs
-- `male/HIEDUC`: labels differ for codes [10, 11, 5, 6, 7, 8, 9]; codes changed (only in 2017-2019: [12, 13, 14, 15]; only in 2022-2023: [1, 2, 3, 4])
-- `male/HISPRACE2`: labels differ for codes [1]
-- `male/MFLASTP`: codes changed (only in 2017-2019: [7]; only in 2022-2023: [8, 9])
-- `male/POT12`: item KC-3 vs KC-6; question text differs (allowed: codes [7] aren't in the 2022-2023 codebook (no cases))
-- `male/RMARITAL`: labels differ for codes [2, 5, 6]
-- `pregnancy/OUTCOME`: labels differ for codes [2]
-- `pregnancy/RELIGION`: labels differ for codes [4]
+- `female/ATTND14`: question text differs (allowed: label differs only in item references or type markers; value labels differ only in case, spacing or dashes; item reference IC-4 in 2017-2019, IC-3 in 2022-2023)
+- `female/ATTNDNOW`: question text differs (allowed: value labels differ only in case, spacing or dashes; item reference IC-10 in 2017-2019, IC-8 in 2022-2023)
+- `female/CURRPRTS`: value labels differ for codes [0, 1] (allowed: codes [2, 3] aren't in the 2017-2019 codebook (no cases))
+- `female/HIEDUC`: value labels differ for codes [10, 11, 5, 6, 7, 8, 9]; codes changed (only in 2017-2019: [12, 13, 14, 15]; only in 2022-2023: [1, 2, 3, 4])
+- `female/HIEDUC_I`: codes changed (only in 2017-2019: [1]; only in 2022-2023: [2]) (allowed: label differs only in case, spacing or dashes)
+- `female/HISPRACE2`: value labels differ for codes [1]
+- `female/POT12`: question text differs (allowed: value labels differ only in case, spacing or dashes; codes [7] aren't in the 2022-2023 codebook (no cases))
+- `female/RELDLIFE`: universe differs (allowed: label differs only in item references or type markers; value labels differ only in case, spacing or dashes; item reference IC-9 in 2017-2019, IC-7 in 2022-2023)
+- `female/RELIGION`: value labels differ for codes [4] (allowed: label differs only in item references or type markers; value labels differ only in case, spacing or dashes)
+- `female/RMARITAL`: value labels differ for codes [2, 5, 6] (allowed: value labels differ only in case, spacing or dashes)
+- `female/SAMLIFENUM`: value labels differ for codes [1, 10, 2, 3, 4, 5, 6, 7, 8, 9] (allowed: codes [997] aren't in the 2022-2023 codebook (no cases))
+- `male/ATTND14`: question text differs (allowed: label differs only in item references or type markers; codes [8] aren't in the 2017-2019 codebook (no cases); item reference JB-4 in 2017-2019, JB-3 in 2022-2023)
+- `male/ATTNDNOW`: question text differs (allowed: item reference JB-10 in 2017-2019, JB-8 in 2022-2023)
+- `male/HIEDUC`: value labels differ for codes [10, 11, 5, 6, 7, 8, 9]; codes changed (only in 2017-2019: [12, 13, 14, 15]; only in 2022-2023: [1, 2, 3, 4])
+- `male/HISPRACE2`: value labels differ for codes [1]
+- `male/MFLASTP`: universe differs; codes changed (only in 2017-2019: [7]; only in 2022-2023: [8, 9])
+- `male/POT12`: question text differs (allowed: codes [7] aren't in the 2022-2023 codebook (no cases); item reference KC-3 in 2017-2019, KC-6 in 2022-2023)
+- `male/RELDLIFE`: universe differs (allowed: label differs only in item references or type markers; item reference JB-9 in 2017-2019, JB-7 in 2022-2023)
+- `male/RMARITAL`: value labels differ for codes [2, 5, 6] (allowed: value labels differ only in case, spacing or dashes)
+- `pregnancy/BIRTHORD`: universe differs; value labels differ for codes [1, 10, 11, 2, 3, 4, 5, 6, 7, 8, 9]
+- `pregnancy/CASEID`: universe differs
+- `pregnancy/OUTCOME`: value labels differ for codes [2] (allowed: value labels differ only in case, spacing or dashes)
+- `pregnancy/RELIGION`: value labels differ for codes [4] (allowed: value labels differ only in case, spacing or dashes)
