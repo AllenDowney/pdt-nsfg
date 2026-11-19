@@ -5,7 +5,7 @@
 
 releases:
   "2022-2023":
-    author: Allen Downey
+    author: Claude (PublicDataToolkit Task 5)
     date: "2026-11-19"
     codebook_format: nchs        # one text codebook per table; no question text
     tables:
@@ -40,7 +40,7 @@ releases:
   # weight and design variables (it has SECU and SEST, not VEST). Names are
   # written as this cycle's codebook writes them.
   "2017-2019":
-    author: Claude (PublicDataToolkit Task 22) for Allen Downey
+    author: Claude (PublicDataToolkit Task 22)
     date: "2026-11-19"
     codebook_format: icpsr       # several section codebooks per table, with question text
     tables:
