@@ -2,7 +2,7 @@ PYTHON ?= python
 # A PublicDataToolkit checkout. Or `pip install -e $(PDT)` and run `pdt check`.
 PDT ?= ../PublicDataToolkit
 
-.PHONY: download data build views check
+.PHONY: download data package build views check
 
 ## Fetch the sources into data/raw. Read the NCHS terms first, then: make download ARGS=--accept-terms
 download:
@@ -11,6 +11,10 @@ download:
 ## Write the common-format parquet files in data/processed (the data release)
 data:
 	PYTHONPATH=$(PDT)/lib $(PYTHON) scripts/build_data.py
+
+## Assemble the data release in data/release (ship data only; publish it by hand)
+package:
+	PYTHONPATH=$(PDT)/lib $(PYTHON) -m pdt package .
 
 ## Build metadata records from data/raw (see build/build_slice.py)
 build:
