@@ -1,6 +1,6 @@
 {
  "pdt_version": "0.1.0",
- "inputs_sha256": "9011a5eb49b19bb7b44cd2d6fc02e171fb878c159198875cda1c233de9aa4452",
+ "inputs_sha256": "2c4b88c4124d0b7d2c19a770e20d7f790f792d84fbd468897aa7e0b1d31c506c",
  "dataset": "nsfg",
  "max_tokens": 20000,
  "shards": [
@@ -28,13 +28,13 @@
      "path": "shards/table/2022-2023-female.jsonl",
      "form": "jsonl",
      "variables": 23,
-     "tokens": 7272
+     "tokens": 7995
     },
     {
      "path": "shards/table/2022-2023-female.txt",
      "form": "txt",
      "variables": 23,
-     "tokens": 896
+     "tokens": 975
     }
    ]
   },
@@ -62,13 +62,13 @@
      "path": "shards/table/2022-2023-male.jsonl",
      "form": "jsonl",
      "variables": 17,
-     "tokens": 5413
+     "tokens": 6120
     },
     {
      "path": "shards/table/2022-2023-male.txt",
      "form": "txt",
      "variables": 17,
-     "tokens": 689
+     "tokens": 750
     }
    ]
   },
@@ -96,13 +96,13 @@
      "path": "shards/table/2022-2023-pregnancy.jsonl",
      "form": "jsonl",
      "variables": 12,
-     "tokens": 3319
+     "tokens": 3419
     },
     {
      "path": "shards/table/2022-2023-pregnancy.txt",
      "form": "txt",
      "variables": 12,
-     "tokens": 437
+     "tokens": 472
     }
    ]
   },

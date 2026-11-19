@@ -35,6 +35,7 @@ table.numeric td + td, table.numeric th + th { text-align: right; font-variant-n
 code { font-size: 90%; }
 .origin { color: var(--muted); font-size: 13px; }
 .gap { white-space: nowrap; }
+ul.diff { margin: 0; padding-left: 18px; }
 blockquote { margin: 4px 0 8px; padding: 4px 10px; border-left: 3px solid var(--line);
   color: var(--muted); white-space: pre-wrap; }
 .corrected { background: var(--warn-bg); color: var(--warn-fg); font-size: 12px; padding: 1px 6px;
