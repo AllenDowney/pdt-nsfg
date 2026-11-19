@@ -128,6 +128,21 @@ ITEM = re.compile(r"^([A-Z]{1,3}-\d+[a-z]?)\s+")
 SCALE_SIGNATURES = {("Yes", "No"): "yes_no"}
 
 
+# Rule nsfg_variable_type: NCHS's VARIABLE TYPE, mapped to the standard's variable_type.
+NSFG_TYPES = {"raw": "response", "recode": "recode", "respondent recode": "recode", "pregnancy recode": "recode",
+              "computed": "computed", "computed in post-processing": "computed", "intermediate": "computed",
+              "imputation flag": "imputation_flag"}
+
+
+def variable_type(nchs_type, name):
+    if not nchs_type:
+        return None
+    key = nchs_type.strip().lower()
+    if key == "weight-related":
+        return "weight" if name.upper().startswith("WGT") else "design"
+    return NSFG_TYPES.get(key, "other")
+
+
 def missing_types(label):
     return MISSING_LABELS.get(label.strip().lower())
 
@@ -165,11 +180,21 @@ def build_variable(name, spec, measure, entry, col, table, CODEBOOK, DATA):
         record["universe"] = entry["universe"]
     if entry.get("notes"):
         record["notes"] = entry["notes"]
+    universe_fix = None
     if entry.get("margin"):
-        # NCHS's own correction, printed in the page margin; kept verbatim and labeled.
-        margin = "Codebook margin note: " + " ".join(entry["margin"])
-        record["notes"] = (record["notes"] + "\n" if "notes" in record else "") + margin
-        report.append(f"`{name}`: has a margin note in the codebook: {' '.join(entry['margin'])[:100]}")
+        # NCHS's own correction, printed in a margin box. It's what the publisher says, so the
+        # corrected universe goes in `universe`, and the superseded text in `notes` (STANDARD.md §5.3).
+        margin = " ".join(entry["margin"])
+        m = re.match(r"Corrected universe for \w+:\s*(.*)$", margin)
+        if m and "universe" in record:
+            superseded = record["universe"]
+            record["universe"] = m.group(1)
+            note = f"Universe as printed in the entry: {superseded!r}; corrected in a margin box."
+            record["notes"] = (record["notes"] + "\n" if "notes" in record else "") + note
+            universe_fix = margin
+        else:
+            record["notes"] = (record["notes"] + "\n" if "notes" in record else "") + "Codebook margin note: " + margin
+        report.append(f"`{name}`: margin box in the codebook: {margin[:100]}")
 
     values, documented, ranges, n_valid = [], set(), [], 0
     for row_label, token, n in entry.get("rows", []):
@@ -242,13 +267,19 @@ def build_variable(name, spec, measure, entry, col, table, CODEBOOK, DATA):
         fields["measure"] = hand
     if "valid_range" in record and not ranges:
         fields["valid_range"] = {"origin": "data_file", "source": DATA, "note": "Min and max of the values that occur."}
+    if universe_fix:
+        fields["universe"] = {"origin": "publisher", "source": CODEBOOK, "location": f"{name}, margin box",
+                              "note": "NCHS's corrected universe, printed beside the entry."}
+    vtype = variable_type(entry.get("variable_type"), name)
+    if vtype:
+        record["variable_type"] = vtype
+        fields["variable_type"] = {"origin": "rule", "rule": "nsfg_variable_type", "rule_version": RULE_VERSION,
+                                   "source": CODEBOOK, "note": f"From the codebook's VARIABLE TYPE {entry['variable_type']!r}."}
     record["provenance"] = {"record": {"origin": "publisher", "source": CODEBOOK}, "fields": fields}
 
     ext = {}
     if item:
         ext["item"] = item.group(1)
-    if entry.get("variable_type"):
-        ext["variable_type"] = entry["variable_type"]
     if ext:
         record["extensions"] = {"nsfg": ext}
     return record, report
