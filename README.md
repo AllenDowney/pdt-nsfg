@@ -10,7 +10,11 @@ The NSFG, run by the National Center for Health Statistics, surveys US men and w
 
 ## Terms of use
 
-The [NCHS Data User Agreement](https://www.cdc.gov/nchs/policy/data-user-agreement.html) limits public-use files to statistical analysis and forbids any attempt to identify respondents. NCHS documentation is a US government work in the public domain. The terms as reviewed are in [`dataset.yaml`](dataset.yaml).
+The [NCHS Data User Agreement](https://www.cdc.gov/nchs/policy/data-user-agreement.html) limits public-use files to statistical analysis and forbids any attempt to identify respondents. NCHS documentation is a US government work in the public domain. Allen Downey reviewed the terms (2026-11-20): the metadata, the documentation and the common-format data ship, with this notice:
+
+> Source: National Center for Health Statistics, National Survey of Family Growth, public-use data files. Use is subject to the NCHS Data User Agreement (https://www.cdc.gov/nchs/policy/data-user-agreement.html): the data may be used only for statistical reporting and analysis, and users must not attempt to identify any person or link the data to identifiable data.
+
+The terms as reviewed are in [`dataset.yaml`](dataset.yaml).
 
 ## How to get the data
 

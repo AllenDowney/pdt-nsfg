@@ -21,14 +21,15 @@ terms:
     and forbids identifying anyone, linking to identifiable data, and research
     on re-identification; none of its terms concerns redistribution. NCHS
     documentation is a US government work in the public domain. Allen Downey
-    reviewed this in MarriageNSFG Task 20 (2026-11-10); recorded here from that
-    review, pending his confirmation for this repo.
+    reviewed this in MarriageNSFG Task 20 (2026-11-10); confirmed for this repo
+    on 2026-11-20.
   data: ship
   documentation: ship
   metadata: ship
   llm_processing: allowed
   reviewed_by: Allen Downey
-  reviewed_on: "2026-11-10"
+  reviewed_on: "2026-11-20"
+  notice: "Source: National Center for Health Statistics, National Survey of Family Growth, public-use data files. Use is subject to the NCHS Data User Agreement (https://www.cdc.gov/nchs/policy/data-user-agreement.html): the data may be used only for statistical reporting and analysis, and users must not attempt to identify any person or link the data to identifiable data."
 naming:
   case: upper
   note: >
