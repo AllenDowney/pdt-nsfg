@@ -1,7 +1,7 @@
 {
- "pdt_version": "0.1.0",
+ "pdt_version": "0.2.0",
  "inputs_sha256": "167e7fd0d4b63914626b91bfa48de4d7a2839642ba7e9de15d67b3f91a492d96",
- "generator_sha256": "feed02ead6fb62dd3ce5164d7c62ab1bc77fefdf83e06a7164b95afa87aba2cf",
+ "generator_sha256": "5bd837fcfa83e3bb04c37847b6e1662f093b130380ce5a4ef1067334b670c30d",
  "dataset": "nsfg",
  "spec": "0.1.0",
  "files": [
