@@ -50,6 +50,15 @@ make check
 
 Run them under a memory cap; the largest step peaks below 1 GB.
 
+`scripts/extract.py` writes an extract from the common-format files (`make data` first), for example:
+
+```bash
+python scripts/extract.py --release 2017-2019 --table female --vars CASEID,RMARITAL,RELIGION,WGT2017_2019 \
+    --out nsfg.csv
+```
+
+`python scripts/extract.py --help` lists the releases and tables and the options.
+
 ## License
 
 Code here is under the MIT License. Our metadata, corrections and generated views are under CC BY 4.0. The publisher's files and documentation keep the publisher's terms (above). See [`LICENSE`](LICENSE).
