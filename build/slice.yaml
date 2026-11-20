@@ -168,11 +168,15 @@ releases:
       female:
         codebook: [{source: nsfg-2002-female-sas-input, path: sas/2002FemRespInput.sas}, {source: nsfg-2002-female-sas-valuelabel, path: sas/2002FemRespValueLabel.sas}, {source: nsfg-2002-female-sas-varlabel, path: sas/2002FemRespVarLabel.sas}]
         data: {source: nsfg-2002-female-dat, path: 2002FemResp.dat}
+        # NCHS's 2002 codebook, for codes the setup program doesn't label (8/9, 98/99, 9997-9999)
+        codebook_supplement: {source: nsfg-2002-female-codebook, path: cdc/Cycle6Codebook-Female.txt}
         variables:
           marriagensfg: [CASEID, CMMARRHX, CMDIVORCX, CMBIRTH, CMINTVW, EVRMARRY, PARITY, FINALWGT, MARDAT01, MAREND01, MARDIS01, RMARITAL, FMARITAL, FMARNO, MAR1DISS, INTENT, ADDEXP, AGEBABY1, STRLOPER, TUBS, HYST, RWANT, HIEDUC, HAVEDEG, DEGREES]
       male:
         codebook: [{source: nsfg-2002-male-sas-input, path: sas/2002MaleInput.sas}, {source: nsfg-2002-male-sas-valuelabel, path: sas/2002MaleValueLabel.sas}, {source: nsfg-2002-male-sas-varlabel, path: sas/2002MaleVarLabel.sas}]
         data: {source: nsfg-2002-male-dat, path: 2002Male.dat}
+        # NCHS's 2002 codebook, for codes the setup program doesn't label (8/9, 98/99, 9997-9999)
+        codebook_supplement: {source: nsfg-2002-male-codebook, path: cdc/Cycle6Codebook-Male.txt}
         variables:
           marriagensfg: [CASEID, MARDAT01, CMDIVW, CMBIRTH, CMINTVW, EVRMARRY, FINALWGT, FMARITAL, TIMESMAR, MARREND4, RMARITAL, ADDEXP, INTENT, EVRCHIL, EVRCHILN, EVEROPER, RWANT, HIEDUC]
   "1995":

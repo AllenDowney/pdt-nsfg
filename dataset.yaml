@@ -254,10 +254,12 @@ releases:
     - nsfg-2002-female-sas-valuelabel
     - nsfg-2002-female-sas-varlabel
     - nsfg-2002-female-dat
+    - nsfg-2002-female-codebook
     - nsfg-2002-male-sas-input
     - nsfg-2002-male-sas-valuelabel
     - nsfg-2002-male-sas-varlabel
     - nsfg-2002-male-dat
+    - nsfg-2002-male-codebook
     tables:
     - id: female
       label: Female respondents
@@ -266,6 +268,7 @@ releases:
       - nsfg-2002-female-sas-valuelabel
       - nsfg-2002-female-sas-varlabel
       - nsfg-2002-female-dat
+      - nsfg-2002-female-codebook
       key:
       - CASEID
       design:
@@ -280,6 +283,7 @@ releases:
       - nsfg-2002-male-sas-valuelabel
       - nsfg-2002-male-sas-varlabel
       - nsfg-2002-male-dat
+      - nsfg-2002-male-codebook
       key:
       - CASEID
       design:

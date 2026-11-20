@@ -948,3 +948,33 @@ sources:
     sha256: e21f47c9b94dced56df67414f3dd1bf0bf5fed4f57f6d3e594b6a27458b66cd9
     bytes: 419620
     convert: pdftotext -layout (poppler 24.02)
+  - id: nsfg-2002-female-codebook
+    title: NSFG Cycle 6 (2002) female respondent file codebook
+    kind: codebook
+    format: pdf
+    url: https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Dataset_Documentation/NSFG/Cycle6Codebook-Female.pdf
+    path: data/raw/cdc/Cycle6Codebook-Female.pdf
+    releases:
+    - '2002'
+    redistribution: ship
+    acquisition: automated
+    fetched_on: '2026-11-20'
+    sha256: 7b3f709e2d1d1507dfd750f10489392ef898d5f8cdbdf4eb985040f581c2d144
+    bytes: 8076643
+    convert: pdftotext -layout (poppler 24.02)
+    note: Used only for codes the 2002 setup program doesn't label (refused, don't know, a blank).
+  - id: nsfg-2002-male-codebook
+    title: NSFG Cycle 6 (2002) male respondent file codebook
+    kind: codebook
+    format: pdf
+    url: https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Dataset_Documentation/NSFG/Cycle6Codebook-Male.pdf
+    path: data/raw/cdc/Cycle6Codebook-Male.pdf
+    releases:
+    - '2002'
+    redistribution: ship
+    acquisition: automated
+    fetched_on: '2026-11-20'
+    sha256: 8019de3635a26a5bdfb7bee6bf41cb3bd0176444cf74ef638da42832261cf1cf
+    bytes: 4230710
+    convert: pdftotext -layout (poppler 24.02)
+    note: Used only for codes the 2002 setup program doesn't label (refused, don't know, a blank).

@@ -1,6 +1,6 @@
 {
  "pdt_version": "0.2.1",
- "inputs_sha256": "f1bdb924b0398dcf50ac8544658fb35311a6b6132fff19f66887d39443d83c84",
+ "inputs_sha256": "c32ee228c87d452a801efd8efbc11d9f17586fa491c730aa4018cbdeef500ff2",
  "generator_sha256": "5bd837fcfa83e3bb04c37847b6e1662f093b130380ce5a4ef1067334b670c30d",
  "dataset": "nsfg",
  "max_tokens": 20000,
@@ -505,7 +505,7 @@
      "path": "shards/table/2002-female.jsonl",
      "form": "jsonl",
      "variables": 25,
-     "tokens": 6792
+     "tokens": 6529
     },
     {
      "path": "shards/table/2002-female.txt",
@@ -539,13 +539,13 @@
      "path": "shards/table/2002-male.jsonl",
      "form": "jsonl",
      "variables": 18,
-     "tokens": 5351
+     "tokens": 4763
     },
     {
      "path": "shards/table/2002-male.txt",
      "form": "txt",
      "variables": 18,
-     "tokens": 449
+     "tokens": 448
     }
    ]
   },
@@ -716,7 +716,7 @@
      "path": "shards/scale/yes-no.jsonl",
      "form": "jsonl",
      "variables": 43,
-     "tokens": 11910
+     "tokens": 11801
     },
     {
      "path": "shards/scale/yes-no.txt",
@@ -731,8 +731,8 @@
  "across_releases": [
   {
    "path": "variables.txt",
-   "variables": 294,
-   "tokens": 8460
+   "variables": 291,
+   "tokens": 8444
   }
  ]
 }

@@ -1,6 +1,6 @@
 {
  "pdt_version": "0.2.1",
- "inputs_sha256": "f1bdb924b0398dcf50ac8544658fb35311a6b6132fff19f66887d39443d83c84",
+ "inputs_sha256": "c32ee228c87d452a801efd8efbc11d9f17586fa491c730aa4018cbdeef500ff2",
  "generator_sha256": "5bd837fcfa83e3bb04c37847b6e1662f093b130380ce5a4ef1067334b670c30d",
  "dataset": "nsfg",
  "spec": "0.1.0",
@@ -27,7 +27,7 @@
    "wordings": 4,
    "missing_codes": 69,
    "corrections": 1,
-   "links": 174,
+   "links": 183,
    "derived": 43
   },
   "2017-2019": {
@@ -37,7 +37,7 @@
    "provenance_fields": 541,
    "numeric_code_labels": 59,
    "missing_codes": 47,
-   "links": 174,
+   "links": 183,
    "derived": 43
   },
   "2015-2017": {
@@ -48,7 +48,7 @@
    "missing_codes": 28,
    "numeric_code_labels": 28,
    "corrections": 7,
-   "links": 174,
+   "links": 183,
    "derived": 43
   },
   "2013-2015": {
@@ -59,7 +59,7 @@
    "corrections": 11,
    "missing_codes": 47,
    "numeric_code_labels": 25,
-   "links": 174,
+   "links": 183,
    "derived": 43
   },
   "2011-2013": {
@@ -70,7 +70,7 @@
    "corrections": 11,
    "missing_codes": 23,
    "numeric_code_labels": 25,
-   "links": 174,
+   "links": 183,
    "derived": 43
   },
   "2006-2010": {
@@ -81,7 +81,7 @@
    "missing_codes": 53,
    "numeric_code_labels": 28,
    "corrections": 2,
-   "links": 174,
+   "links": 183,
    "derived": 43
   },
   "2002": {
@@ -91,8 +91,8 @@
    "provenance_fields": 279,
    "missing_codes": 37,
    "numeric_code_labels": 27,
-   "corrections": 5,
-   "links": 174,
+   "corrections": 1,
+   "links": 183,
    "derived": 43
   },
   "1995": {
@@ -103,7 +103,7 @@
    "numeric_code_labels": 12,
    "corrections": 6,
    "missing_codes": 18,
-   "links": 174,
+   "links": 183,
    "derived": 43
   },
   "1988": {
@@ -114,7 +114,7 @@
    "numeric_code_labels": 16,
    "missing_codes": 16,
    "corrections": 2,
-   "links": 174,
+   "links": 183,
    "derived": 43
   },
   "1982": {
@@ -125,7 +125,7 @@
    "numeric_code_labels": 14,
    "corrections": 7,
    "missing_codes": 24,
-   "links": 174,
+   "links": 183,
    "derived": 43
   }
  }

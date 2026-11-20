@@ -374,7 +374,19 @@ def build_variable(name, rel, rspec, measure, entry, col, table, codebook_src, d
         if got != n:
             report.append(f"`{name}` code {token}: the codebook counts {n}, the data {got}")
     n_null = int(col.isna().sum())
-    if n_null and "." not in documented and setup:
+    sup_blank = (entry.get("supplement") or {}).get(".")
+    if n_null and "." not in documented and setup and sup_blank:
+        label, n = sup_blank
+        types = setup_missing_types(label)
+        values.append({"code": ".", "label": label, "kind": "missing" if types else "unresolved", "n": n,
+                       **({"missing_types": types} if types else {}),
+                       "origin": {"origin": "rule" if types else "publisher", **({"rule": "nsfg_missing_from_setup_labels",
+                                  "rule_version": RULE_VERSION} if types else {}), "source": entry["supplement_source"],
+                                  "note": "'.' (a blank) and its label from NCHS's codebook for the release; the setup "
+                                          "program doesn't label it."}})
+        if n != n_null:
+            report.append(f"`{name}` code .: the codebook counts {n}, the data {n_null}")
+    elif n_null and "." not in documented and setup:
         # A blank field (SAS reads it as ".") that the setup program doesn't label. Unresolved here; the
         # build's inferred corrections classify it (BLANK_CORRECTION below).
         values.append({"code": ".", "label": "", "kind": "unresolved",
@@ -396,6 +408,24 @@ def build_variable(name, rel, rspec, measure, entry, col, table, codebook_src, d
     for code, count in sorted(occurring.items()):
         code = int(code) if float(code).is_integer() else code
         in_range = any(lo <= code <= hi for lo, hi in ranges)
+        sup = (entry.get("supplement") or {}).get(str(code))
+        if code not in documented and sup:
+            label, n = sup
+            types = setup_missing_types(label)
+            v = {"code": code, "label": label, "kind": "missing" if types else "valid", "n": n,
+                 "origin": {"origin": "publisher", "source": entry["supplement_source"],
+                            "note": "The setup program doesn't label this code; NCHS's codebook for the release does."}}
+            if types:
+                v["missing_types"] = types
+                v["origin"] = {"origin": "rule", "rule": "nsfg_missing_from_setup_labels", "rule_version": RULE_VERSION,
+                               "source": entry["supplement_source"],
+                               "note": "Code and label from NCHS's codebook for the release (the setup program doesn't "
+                                       "label it); kind and type from the label."}
+            values.append(v)
+            documented.add(code)
+            if n != count:
+                report.append(f"`{name}` code {code}: the codebook counts {n}, the data {count}")
+            continue
         if code not in documented and not in_range and (values or ranges):
             values.append({"code": code, "label": "", "kind": "unresolved",
                            "origin": {"origin": "data_file", "source": data_src,
@@ -464,6 +494,28 @@ def build_variable(name, rel, rspec, measure, entry, col, table, codebook_src, d
     return record, report
 
 
+SUP_HEAD = re.compile(r"^\s*([A-Za-z][A-Za-z0-9_]*) \(\d+ - \d+\)\s*$")
+SUP_ROW = re.compile(r"^\s*(-?\d+|\.)\s{2,}(.+?)\s{2,}(\d+)\s*$")
+
+
+def supplement_rows(path, wanted):
+    """{NAME: {code token: (label, n)}} from NCHS's 2002 codebook ("cmmarrhx (340 - 343)", then a
+    "Value Label Total" table), for the wanted names."""
+    rows, current = {}, None
+    for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
+        m = SUP_HEAD.match(line)
+        if m:
+            current = m.group(1).upper() if m.group(1).upper() in wanted and m.group(1).upper() not in rows else None
+            if current:
+                rows[current] = {}
+            continue
+        if current:
+            r = SUP_ROW.match(line)
+            if r:
+                rows[current][r.group(1)] = (r.group(2).strip(), int(r.group(3)))
+    return rows
+
+
 def codebook_entries(rspec, t, names):
     """Return {NAME: entry}, each with entry["source"], the codebook source it came from."""
     entries = {}
@@ -475,6 +527,11 @@ def codebook_entries(rspec, t, names):
             return next((cb["source"] for cb in t["codebook"] if word in cb["path"]), t["codebook"][0]["source"])
         out = {n: dict(e, source=src("Input"), setup=True, label_source=src("VarLabel"), value_source=src("ValueLabel"))
                for n, e in layout.items() if n in {x.upper() for x in names}}
+        sup = t.get("codebook_supplement")
+        if sup:   # NCHS's codebook for the same release, for codes the setup program doesn't label (2002)
+            rows = supplement_rows(text_of(sup["path"].replace(".txt", ".pdf")), out)
+            for n, r in rows.items():
+                out[n].update(supplement=r, supplement_source=sup["source"])
         for name, fix in (t.get("layout_fixes") or {}).items():
             out[name.upper()]["notes"] = (f"The setup program gives columns {fix['was']}; this repo reads "
                                           f"{fix['start']}-{fix['end']}, where the data holds the variable "
