@@ -37,3 +37,7 @@ With the sources in `data/raw/` and a PublicDataToolkit checkout next to this re
 make build
 make check
 ```
+
+## License
+
+Code here is under the MIT License. Our metadata, corrections and generated views are under CC BY 4.0. The publisher's files and documentation keep the publisher's terms (above). See [`LICENSE`](LICENSE).
