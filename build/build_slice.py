@@ -7,7 +7,7 @@ Reads build/slice.yaml and the files under data/raw/ it names. Writes
 metadata/releases/<release>/<table>/variables.jsonl, metadata/links.jsonl,
 metadata/derived/scale_signature.jsonl and build/report.md.
 
-Two releases, with different documentation:
+Ten releases, with three kinds of documentation:
 
 - 2022-2023: one codebook per table in NCHS's own layout (parse_codebook below),
   with no question text; the SAS data files. Question text comes from the
@@ -16,6 +16,10 @@ Two releases, with different documentation:
 - 2017-2019: section codebooks per table in ICPSR's layout, with question text
   (build/icpsr_codebook.py); fixed-width data with Stata dictionaries (.dct),
   whose variable labels are the records' labels.
+- 1982 to 2015-2017 (PublicDataToolkit Task 75): NCHS's SAS setup programs, which give the
+  layout, variable labels and value labels but no question text or counts (build/sas_setup.py);
+  counts and availability come from the data. A blank the program doesn't label is unresolved in
+  the record, and an inferred correction (blank_corrections below) classifies it Inapplicable.
 
 Where each field comes from:
 - label, variable type, universe, notes, codes and labels: the codebook
@@ -24,12 +28,12 @@ Where each field comes from:
 - which codes occur, storage type: the data file
 - measure: build/slice.yaml (hand)
 - which codes are missing, and why: a rule over the codebook's labels, because
-  the NSFG codebook doesn't mark missing codes (rule nsfg_missing_from_labels)
+  the NSFG codebook doesn't mark missing codes (rule nsfg_missing_from_labels; for the setup programs' wording, nsfg_missing_from_setup_labels)
 
-Links between the releases (STANDARD.md §5.2): the ones NCHS's summary of
-questionnaire changes asserts (slice.yaml publisher_links), links entered by
-hand (slice.yaml hand_links), and the rule nsfg_identical_documentation (see
-identical_documentation below).
+Links between consecutive releases (STANDARD.md §5.2): for 2017-2019 -> 2022-2023,
+the ones NCHS's summary of questionnaire changes asserts (slice.yaml publisher_links)
+and links entered by hand (slice.yaml hand_links); for every pair, the rule
+nsfg_identical_documentation (see identical_documentation below).
 """
 
 import collections
@@ -44,6 +48,7 @@ import yaml
 
 import capilite
 import icpsr_codebook
+import sas_setup
 
 # The scale-signature rule is shared (PublicDataToolkit lib/pdt/derived.py). Use pdt from
 # PYTHONPATH; otherwise use a checkout next to this repo, or $PDT.
@@ -186,6 +191,22 @@ def missing_types(label):
     return MISSING_LABELS.get(label.strip().lower())
 
 
+# Rule nsfg_missing_from_setup_labels: the SAS setup programs (1982-2015-2017) don't mark missing codes
+# either, and word them differently ("Date refused", "DK, don't remember", "NOT ASCERTAINED"). A code is
+# missing when its whole label, in any case and without trailing punctuation, is one of these.
+SETUP_MISSING = {
+    "refused": ["refused"], "date refused": ["refused"], "data refused": ["refused"], "rf": ["refused"],
+    "don't know": ["dk"], "dont know": ["dk"], "dk": ["dk"], "dk, don't remember": ["dk"], "dk/dr": ["dk"],
+    "date unknown": ["dk"], "don't know/don't remember": ["dk"],
+    "not ascertained": ["no_answer"], "date not ascertained": ["no_answer"], "na": ["no_answer"],
+    "inapplicable": ["inap"], "not applicable": ["inap"], "inap": ["inap"],
+}
+
+
+def setup_missing_types(label):
+    return SETUP_MISSING.get(re.sub(r"[.\s]+$", "", label.strip().lower()))
+
+
 # ---------------------------------------------------------------- data files
 
 DCT_LINE = re.compile(r"_column\((\d+)\)\s+\S+\s+(\w+)\s+%(\d+)(?:\.\d+)?[a-z]\s+\"(.*)\"")
@@ -200,6 +221,10 @@ def read_dct(path):
 def read_data(t, names):
     """Return (frame, {NAME: dictionary label}) for one table; columns keep the file's spelling."""
     data = t["data"]
+    if t.get("_setup"):
+        frame = sas_setup.read(RAW / data["path"], [RAW / cb["path"] for cb in t["codebook"]], names, t.get("layout_fixes"))
+        layout = t["_setup"]
+        return frame.apply(lambda c: pd.to_numeric(c, errors="coerce")), {n.upper(): layout[n.upper()].get("label") for n in names}
     if "dictionary" not in data:
         return pd.read_sas(RAW / data["path"], format="sas7bdat", encoding="latin-1"), {}
     wanted = {n.upper() for n in names}
@@ -246,6 +271,8 @@ def build_variable(name, rel, rspec, measure, entry, col, table, codebook_src, d
     present = numbers.dropna()
     if len(present):
         record["storage_type"] = "integer" if (present % 1 == 0).all() else "float"
+    if entry.get("is_text"):   # a $ column in the setup program: text, kept as written (2002 CASEID)
+        record["storage_type"] = "string"
     if name.upper() in measure:
         record["measure"] = measure[name.upper()]
     if entry.get("universe"):
@@ -289,6 +316,7 @@ def build_variable(name, rel, rspec, measure, entry, col, table, codebook_src, d
             report.append(f"`{name}`: the codebook's label gives item {item_ref}, the questionnaire {block['item']}")
 
     values, documented, ranges, n_valid = [], set(), [], 0
+    setup = entry.get("setup")   # a SAS setup program: value labels, no counts
     for row_label, token, n in entry.get("rows", []):
         if token == ".":
             code = "."
@@ -299,21 +327,24 @@ def build_variable(name, rel, rspec, measure, entry, col, table, codebook_src, d
             def slack(x):
                 return 0.5 * 10 ** -len(x.split(".")[1]) if "." in x else 0
             ranges.append((float(lo) - slack(lo), float(hi) + slack(hi)))
-            n_valid += n
+            n_valid += n or 0
             continue
         else:
             number = float(token)
             code = int(number) if number.is_integer() else number
         documented.add(code)
-        types = missing_types(row_label)
+        types = setup_missing_types(row_label) if setup else missing_types(row_label)
+        rule = "nsfg_missing_from_setup_labels" if setup else "nsfg_missing_from_labels"
         if types:
-            values.append({"code": code, "label": row_label, "kind": "missing", "missing_types": types, "n": n,
-                           "origin": {"origin": "rule", "rule": "nsfg_missing_from_labels", "rule_version": RULE_VERSION,
-                                      "source": codebook_src,
-                                      "note": "The codebook doesn't mark missing codes; kind and type from the label."}})
+            values.append({"code": code, "label": row_label, "kind": "missing", "missing_types": types,
+                           **({"n": n} if n is not None else {}),
+                           "origin": {"origin": "rule", "rule": rule, "rule_version": RULE_VERSION,
+                                      "source": entry.get("value_source", codebook_src) if setup else codebook_src,
+                                      "note": ("The setup program" if setup else "The codebook")
+                                              + " doesn't mark missing codes; kind and type from the label."}})
         else:
-            values.append({"code": code, "label": row_label, "kind": "valid", "n": n})
-            n_valid += n
+            values.append({"code": code, "label": row_label, "kind": "valid", **({"n": n} if n is not None else {})})
+            n_valid += n or 0
             if code == "." :
                 report.append(f"`{name}`: '.' labeled {row_label!r}, not recognized as missing")
     if ranges:
@@ -337,14 +368,31 @@ def build_variable(name, rel, rspec, measure, entry, col, table, codebook_src, d
     occurring = collections.Counter(present)
     # The codebook's counts should match the data's; a mismatch means a parsing or recognition error.
     for row_label, token, n in entry.get("rows", []):
-        if re.search(r"\d-", token):
+        if re.search(r"\d-", token) or n is None:
             continue
         got = int(col.isna().sum()) if token == "." else occurring.get(float(token), 0)
         if got != n:
             report.append(f"`{name}` code {token}: the codebook counts {n}, the data {got}")
     n_null = int(col.isna().sum())
-    if n_null and "." not in documented and (values or ranges):
+    if n_null and "." not in documented and setup:
+        # A blank field (SAS reads it as ".") that the setup program doesn't label. Unresolved here; the
+        # build's inferred corrections classify it (BLANK_CORRECTION below).
+        values.append({"code": ".", "label": "", "kind": "unresolved",
+                       "origin": {"origin": "data_file", "source": data_src,
+                                  "note": f"A blank field in {n_null} records; the setup program doesn't label '.'."}})
+    elif n_null and "." not in documented and (values or ranges):
         report.append(f"`{name}`: {n_null} missing values in the data, but no '.' row in the codebook")
+    quantity = measure.get(name.upper()) in {"continuous", "weight", "identifier", "count"}
+    if setup and quantity and not ranges and not entry.get("is_text"):
+        # A setup program labels only a quantity's special codes (1982 CMBIRTH: 9797 "Date refused"); every
+        # other value is a value. The range is the data's, without the codes the program labels.
+        others = [float(x) for x in present if (int(x) if float(x).is_integer() else x) not in documented]
+        if others:
+            lo, hi = min(others), max(others)
+            ranges.append((lo, hi))
+            record["valid_range"] = {"min": int(lo) if lo.is_integer() else lo, "max": int(hi) if hi.is_integer() else hi,
+                                     "note": "The setup program labels only the special codes; min and max of the "
+                                             "other values in the data."}
     for code, count in sorted(occurring.items()):
         code = int(code) if float(code).is_integer() else code
         in_range = any(lo <= code <= hi for lo, hi in ranges)
@@ -360,7 +408,10 @@ def build_variable(name, rel, rspec, measure, entry, col, table, codebook_src, d
         record["valid_range"] = {k: (int(v) if float(v).is_integer() else float(v))
                                  for k, v in {"min": present.min(), "max": present.max()}.items()}
 
-    record["availability"] = [{"wave": rel, "n": int(n_valid) if (values or ranges) else int(len(present))}]
+    if setup:   # no counts in the documentation: count the values that aren't missing or unresolved codes
+        missing = {v["code"] for v in values if v["kind"] != "valid"}
+        n_valid = sum(1 for x in present if (int(x) if float(x).is_integer() else x) not in missing)
+    record["availability"] = [{"wave": rel, "n": int(n_valid) if (values or ranges or setup) else int(len(present))}]
     record["source_location"] = {"source": codebook_src, "anchor": name.upper()}
 
     fields = {
@@ -369,16 +420,28 @@ def build_variable(name, rel, rspec, measure, entry, col, table, codebook_src, d
         "availability": {"origin": "publisher", "source": codebook_src,
                          "note": "n is the codebook's count of valid answers."},
     }
+    if setup:
+        fields["values"] = {"origin": "publisher", "source": entry.get("value_source", codebook_src),
+                            "note": "Codes and labels from the SAS setup program's PROC FORMAT value labels, for the "
+                                    "format its FORMAT statement gives the variable; which are missing by rule (see each code)."}
+        fields["availability"] = {"origin": "data_file", "source": data_src,
+                                  "note": "n counts the values that aren't missing or unresolved codes (the setup program prints no counts)."}
     if label_src and "label" in record:
         fields["label"] = {"origin": "publisher", "source": label_src, "note": "The variable label in NCHS's Stata dictionary."}
+    if setup and "label" in record:
+        fields["label"] = {"origin": "publisher", "source": entry.get("label_source", codebook_src),
+                           "note": "The setup program's LABEL statement."}
     if questions_prov:
         fields["questions"] = questions_prov
     if "storage_type" in record:
         fields["storage_type"] = {"origin": "rule", "rule": "storage_type_from_values", "rule_version": RULE_VERSION,
                                   "source": data_src, "note": "integer if every value in the data is whole, else float."}
+        if entry.get("is_text"):
+            fields["storage_type"] = {"origin": "publisher", "source": codebook_src,
+                                      "note": "A character ($) column in the setup program's INPUT statement."}
     if "measure" in record:
         fields["measure"] = hand
-    if "valid_range" in record and not ranges:
+    if "valid_range" in record and (not ranges or (setup and quantity)):
         fields["valid_range"] = {"origin": "data_file", "source": data_src, "note": "Min and max of the values that occur."}
     if universe_fix:
         fields["universe"] = {"origin": "publisher", "source": codebook_src, "location": f"{name}, margin box",
@@ -404,6 +467,19 @@ def build_variable(name, rel, rspec, measure, entry, col, table, codebook_src, d
 def codebook_entries(rspec, t, names):
     """Return {NAME: entry}, each with entry["source"], the codebook source it came from."""
     entries = {}
+    if rspec["codebook_format"] == "sas_setup":
+        layout = sas_setup.parse([RAW / cb["path"] for cb in t["codebook"]])
+        layout.pop("__filter__", None)
+        t["_setup"] = layout
+        def src(word):   # 2002 splits the program: Input, ValueLabel, VarLabel
+            return next((cb["source"] for cb in t["codebook"] if word in cb["path"]), t["codebook"][0]["source"])
+        out = {n: dict(e, source=src("Input"), setup=True, label_source=src("VarLabel"), value_source=src("ValueLabel"))
+               for n, e in layout.items() if n in {x.upper() for x in names}}
+        for name, fix in (t.get("layout_fixes") or {}).items():
+            out[name.upper()]["notes"] = (f"The setup program gives columns {fix['was']}; this repo reads "
+                                          f"{fix['start']}-{fix['end']}, where the data holds the variable "
+                                          "(build/slice.yaml layout_fixes, checked by hand against the data).")
+        return out
     for cb in t["codebook"]:
         path = text_of(cb["path"])
         found = parse_codebook(path, names) if rspec["codebook_format"] == "nchs" else icpsr_codebook.parse([path], names)
@@ -566,15 +642,30 @@ def identical_documentation(a, b, omits=(True, True)):
     return diffs, allowed, (counts if changed and counts == changed else []), label_change, codes_changed
 
 
+RELEASE_ORDER = ["1982", "1988", "1995", "2002", "2006-2010", "2011-2013", "2013-2015", "2015-2017", "2017-2019", "2022-2023"]
+
+
 def build_links(spec, by_key):
-    """Return (links, report lines). by_key maps (release, table, NAME) to a record."""
-    old, new = "2017-2019", "2022-2023"
+    """Links between each pair of consecutive releases; return (links, report lines by pair)."""
+    releases = [r for r in RELEASE_ORDER if r in spec["releases"]]
+    links, lines = [], []
+    for old, new in zip(releases, releases[1:]):
+        pair_links, pair_lines = build_pair_links(spec, by_key, old, new)
+        links += pair_links
+        lines += ["", f"### {old} -> {new}", "", *pair_lines]
+    return links, lines
+
+
+def build_pair_links(spec, by_key, old, new):
+    """Return (links, report lines) for two consecutive releases. NCHS's statements and the hand links
+    in slice.yaml are about 2017-2019 -> 2022-2023 only."""
     links, lines, done = [], [], set()
+    latest = (old, new) == ("2017-2019", "2022-2023")
 
     def ref(r):
         return {"release": r["release"], "table": r["table"], "name": r["name"]}
 
-    for pl in spec.get("publisher_links", []):
+    for pl in (spec.get("publisher_links", []) if latest else []):
         for table in pl["tables"]:
             a, b = by_key.get((old, table, pl["from"].upper())), by_key.get((new, table, pl["to"].upper()))
             if not (a and b):
@@ -587,7 +678,7 @@ def build_links(spec, by_key):
             done.add((table, pl["from"].upper()))
 
     hand = []
-    for hl in spec.get("hand_links", []):
+    for hl in (spec.get("hand_links", []) if latest else []):
         for table in hl["tables"]:
             a, b = by_key.get((old, table, hl["name"].upper())), by_key.get((new, table, hl["name"].upper()))
             if not (a and b):
@@ -605,7 +696,7 @@ def build_links(spec, by_key):
     occurring = {s["id"]: s.get("lists_only_occurring_codes")
                  for s in yaml.safe_load((ROOT / "sources.yaml").read_text())["sources"]}
     caveat = ("NCHS doesn't assert this, and its 2022-2023 FAQ cautions against comparing 2022-2023 with earlier "
-              "cycles because of the multimode design.")
+              "cycles because of the multimode design." if new == "2022-2023" else "NCHS doesn't assert this.")
     shared = sorted((t, n) for (rel, t, n) in by_key if rel == new and (old, t, n) in by_key)
     linked, reworded, unlinked = [], [], []
     for table, name in shared:
@@ -695,6 +786,11 @@ def main():
     signatures = scale_signatures(all_records)
     write_jsonl(META / "derived" / "scale_signature.jsonl", signatures)
 
+    hand = [c for c in map(json.loads, (META / "corrections.jsonl").open()) if not c["id"].startswith(BLANK_PREFIX)] \
+        if (META / "corrections.jsonl").exists() else []
+    generated = blank_corrections(all_records, spec)
+    write_jsonl(META / "corrections.jsonl", hand + generated)
+
     by_key = {(r["release"], r["table"], r["name"].upper()): r for r in all_records}
     links, link_lines = build_links(spec, by_key)
     write_jsonl(META / "links.jsonl", links)
@@ -705,15 +801,48 @@ def main():
         "Generated by `build/build_slice.py`. Do not edit.",
         "",
         f"- Releases: {', '.join(spec['releases'])}; {len(all_records)} records; scale signatures: {len(signatures)}",
+        f"- Inferred corrections (a blank is Inapplicable, in setup-documented releases): {len(generated)}",
         "",
         *sections,
-        "## Links from 2017-2019 to 2022-2023",
+        "## Links between consecutive releases",
         "",
         *link_lines,
         "",
     ]
     (ROOT / "build" / "report.md").write_text("\n".join(lines))
     print(f"{len(all_records)} records, {len(links)} links; see build/report.md")
+
+
+BLANK_PREFIX = "blank-inap-"
+BLANK_EVIDENCE = [
+    {"citation": "NSFG 2002 female respondent file, SAS value labels (2002FemRespValueLabel.sas): '. = \"INAPPLICABLE\"' "
+                 "in 82 value-label formats, e.g. line 55"},
+    {"citation": "2017-2019 NSFG codebooks (NCHS): the '.' row of a variable's distribution is labeled INAPPLICABLE "
+                 "(the 2017-2019 records in this repo)"},
+]
+
+
+def blank_corrections(records, spec):
+    """Inferred corrections: in a release documented by a SAS setup program, a blank field ('.') the program
+    doesn't label is Inapplicable, as NCHS labels it in 2002's value labels and in the 2017-2019 codebooks."""
+    out = []
+    for r in records:
+        if spec["releases"][r["release"]]["codebook_format"] != "sas_setup":
+            continue
+        for i, v in enumerate(r.get("values", [])):
+            if v["code"] == "." and v["kind"] == "unresolved":
+                rspec = spec["releases"][r["release"]]
+                out.append({"id": f"{BLANK_PREFIX}{r['release']}-{r['table']}-{r['name'].lower()}",
+                            "target": {"name": r["name"], "table": r["table"], "releases": [r["release"]], "field": f"/values/{i}"},
+                            "original": v,
+                            "corrected": {"code": ".", "label": "Inapplicable", "kind": "missing", "missing_types": ["inap"],
+                                          "origin": {"origin": "hand", "author": rspec["author"], "date": rspec["date"],
+                                                     "note": "Inferred from NCHS's labels for '.' in other cycles."}},
+                            "problem": "A blank field in the data, which the setup program doesn't label. NCHS labels "
+                                       "'.' (a blank) INAPPLICABLE in 2002's value labels and the 2017-2019 codebooks.",
+                            "evidence": BLANK_EVIDENCE, "confidence": "inferred", "upstream": {"status": "not_filed"},
+                            "author": rspec["author"], "date": rspec["date"]})
+    return out
 
 
 def write_jsonl(path, records):

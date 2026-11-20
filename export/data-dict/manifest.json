@@ -1,36 +1,132 @@
 {
- "pdt_version": "0.2.0",
- "inputs_sha256": "167e7fd0d4b63914626b91bfa48de4d7a2839642ba7e9de15d67b3f91a492d96",
+ "pdt_version": "0.2.1",
+ "inputs_sha256": "f1bdb924b0398dcf50ac8544658fb35311a6b6132fff19f66887d39443d83c84",
  "generator_sha256": "5bd837fcfa83e3bb04c37847b6e1662f093b130380ce5a4ef1067334b670c30d",
  "dataset": "nsfg",
  "spec": "0.1.0",
  "files": [
   "2022-2023.yaml",
   "2017-2019.yaml",
+  "2015-2017.yaml",
+  "2013-2015.yaml",
+  "2011-2013.yaml",
+  "2006-2010.yaml",
+  "2002.yaml",
+  "1995.yaml",
+  "1988.yaml",
+  "1982.yaml",
   "LOSSES.md"
  ],
  "losses": {
   "2022-2023": {
    "release_version": 1,
-   "variables": 55,
-   "availability": 55,
-   "provenance_fields": 348,
-   "numeric_code_labels": 45,
+   "variables": 83,
+   "availability": 83,
+   "provenance_fields": 521,
+   "numeric_code_labels": 68,
    "wordings": 4,
-   "missing_codes": 48,
+   "missing_codes": 69,
    "corrections": 1,
-   "links": 18,
-   "derived": 2
+   "links": 174,
+   "derived": 43
   },
   "2017-2019": {
    "release_version": 1,
-   "variables": 49,
-   "availability": 49,
-   "provenance_fields": 356,
-   "numeric_code_labels": 39,
-   "missing_codes": 34,
-   "links": 18,
-   "derived": 2
+   "variables": 75,
+   "availability": 75,
+   "provenance_fields": 541,
+   "numeric_code_labels": 59,
+   "missing_codes": 47,
+   "links": 174,
+   "derived": 43
+  },
+  "2015-2017": {
+   "release_version": 1,
+   "variables": 38,
+   "availability": 38,
+   "provenance_fields": 246,
+   "missing_codes": 28,
+   "numeric_code_labels": 28,
+   "corrections": 7,
+   "links": 174,
+   "derived": 43
+  },
+  "2013-2015": {
+   "release_version": 1,
+   "variables": 42,
+   "availability": 42,
+   "provenance_fields": 275,
+   "corrections": 11,
+   "missing_codes": 47,
+   "numeric_code_labels": 25,
+   "links": 174,
+   "derived": 43
+  },
+  "2011-2013": {
+   "release_version": 1,
+   "variables": 42,
+   "availability": 42,
+   "provenance_fields": 275,
+   "corrections": 11,
+   "missing_codes": 23,
+   "numeric_code_labels": 25,
+   "links": 174,
+   "derived": 43
+  },
+  "2006-2010": {
+   "release_version": 1,
+   "variables": 44,
+   "availability": 44,
+   "provenance_fields": 286,
+   "missing_codes": 53,
+   "numeric_code_labels": 28,
+   "corrections": 2,
+   "links": 174,
+   "derived": 43
+  },
+  "2002": {
+   "release_version": 1,
+   "variables": 43,
+   "availability": 43,
+   "provenance_fields": 279,
+   "missing_codes": 37,
+   "numeric_code_labels": 27,
+   "corrections": 5,
+   "links": 174,
+   "derived": 43
+  },
+  "1995": {
+   "release_version": 1,
+   "variables": 20,
+   "availability": 20,
+   "provenance_fields": 129,
+   "numeric_code_labels": 12,
+   "corrections": 6,
+   "missing_codes": 18,
+   "links": 174,
+   "derived": 43
+  },
+  "1988": {
+   "release_version": 1,
+   "variables": 20,
+   "availability": 20,
+   "provenance_fields": 129,
+   "numeric_code_labels": 16,
+   "missing_codes": 16,
+   "corrections": 2,
+   "links": 174,
+   "derived": 43
+  },
+  "1982": {
+   "release_version": 1,
+   "variables": 20,
+   "availability": 20,
+   "provenance_fields": 131,
+   "numeric_code_labels": 14,
+   "corrections": 7,
+   "missing_codes": 24,
+   "links": 174,
+   "derived": 43
   }
  }
 }

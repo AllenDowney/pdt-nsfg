@@ -486,3 +486,465 @@ sources:
     fetched_on: '2026-11-19'
     sha256: 983a7ffcbe90f5043288d9a1600d7b7aba09de79f88443099c39e04c66e004ab
     bytes: 20405
+  - id: nsfg-2015-2017-female-sas
+    title: NSFG 2015-2017 female respondent file, SAS setup program (2015_2017_FemRespSetup.sas)
+    kind: codebook
+    format: sas
+    url: https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/NSFG/sas/2015_2017_FemRespSetup.sas
+    path: data/raw/sas/2015_2017_FemRespSetup.sas
+    releases:
+    - 2015-2017
+    redistribution: ship
+    acquisition: automated
+    fetched_on: '2026-11-20'
+    sha256: 9144d9a3f28048796b23426640b6bed68da909f78d7544b5e68bff18aaad96be
+    bytes: 541277
+  - id: nsfg-2015-2017-female-dat
+    title: NSFG 2015-2017 female respondent file, data, fixed-width text
+    kind: data
+    format: fixed-width
+    url: https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/NSFG/2015_2017_FemRespData.dat
+    path: data/raw/2015_2017_FemRespData.dat
+    releases:
+    - 2015-2017
+    redistribution: ship
+    acquisition: automated
+    fetched_on: '2026-11-20'
+    sha256: 27e6e281eaf11d54cbab6c7b60ab284f822e40da630d825f7a00765c83eef173
+    bytes: 25120742
+  - id: nsfg-2015-2017-male-sas
+    title: NSFG 2015-2017 male respondent file, SAS setup program (2015_2017_MaleSetup.sas)
+    kind: codebook
+    format: sas
+    url: https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/NSFG/sas/2015_2017_MaleSetup.sas
+    path: data/raw/sas/2015_2017_MaleSetup.sas
+    releases:
+    - 2015-2017
+    redistribution: ship
+    acquisition: automated
+    fetched_on: '2026-11-20'
+    sha256: bf3dba5e419fe26c960c8b4011ab729dd65e0f8bbd16344f116627093debdbc0
+    bytes: 545322
+  - id: nsfg-2015-2017-male-dat
+    title: NSFG 2015-2017 male respondent file, data, fixed-width text
+    kind: data
+    format: fixed-width
+    url: https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/NSFG/2015_2017_MaleData.dat
+    path: data/raw/2015_2017_MaleData.dat
+    releases:
+    - 2015-2017
+    redistribution: ship
+    acquisition: automated
+    fetched_on: '2026-11-20'
+    sha256: c10250d2832b18cb83a138398d0a2edc7bcc1461b53f861708ad9f1bc71d534e
+    bytes: 18936340
+  - id: nsfg-2013-2015-female-sas
+    title: NSFG 2013-2015 female respondent file, SAS setup program (2013_2015_FemRespSetup.sas)
+    kind: codebook
+    format: sas
+    url: https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/NSFG/sas/2013_2015_FemRespSetup.sas
+    path: data/raw/sas/2013_2015_FemRespSetup.sas
+    releases:
+    - 2013-2015
+    redistribution: ship
+    acquisition: automated
+    fetched_on: '2026-11-20'
+    sha256: 78bb9d054be71bd00304273d51cd3a8c83d2cb1efd8609039fdc9cf6106b7ddc
+    bytes: 561170
+  - id: nsfg-2013-2015-female-dat
+    title: NSFG 2013-2015 female respondent file, data, fixed-width text
+    kind: data
+    format: fixed-width
+    url: https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/NSFG/2013_2015_FemRespData.dat
+    path: data/raw/2013_2015_FemRespData.dat
+    releases:
+    - 2013-2015
+    redistribution: ship
+    acquisition: automated
+    fetched_on: '2026-11-20'
+    sha256: 56471e497101c1daf24009f5325f7bd7950dd8bdfa86bfca4137f149e2c2808f
+    bytes: 28979415
+  - id: nsfg-2013-2015-male-sas
+    title: NSFG 2013-2015 male respondent file, SAS setup program (2013_2015_MaleSetup.sas)
+    kind: codebook
+    format: sas
+    url: https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/NSFG/sas/2013_2015_MaleSetup.sas
+    path: data/raw/sas/2013_2015_MaleSetup.sas
+    releases:
+    - 2013-2015
+    redistribution: ship
+    acquisition: automated
+    fetched_on: '2026-11-20'
+    sha256: 8eebcff21a7e157adba245163fdb3e870b2ddd27179a075ba16dcc6e77d807f5
+    bytes: 528044
+  - id: nsfg-2013-2015-male-dat
+    title: NSFG 2013-2015 male respondent file, data, fixed-width text
+    kind: data
+    format: fixed-width
+    url: https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/NSFG/2013_2015_MaleData.dat
+    path: data/raw/2013_2015_MaleData.dat
+    releases:
+    - 2013-2015
+    redistribution: ship
+    acquisition: automated
+    fetched_on: '2026-11-20'
+    sha256: 1452c35869a82cf90ac925dc8685c3741b9dd4fd7a035af77c8f37d2133e2d90
+    bytes: 20191386
+  - id: nsfg-2011-2013-female-sas
+    title: NSFG 2011-2013 female respondent file, SAS setup program (2011_2013_FemRespSetup.sas)
+    kind: codebook
+    format: sas
+    url: https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/NSFG/sas/2011_2013_FemRespSetup.sas
+    path: data/raw/sas/2011_2013_FemRespSetup.sas
+    releases:
+    - 2011-2013
+    redistribution: ship
+    acquisition: automated
+    fetched_on: '2026-11-20'
+    sha256: a07688d9765ef31c399aec3870f74accffad4d5cc3d397dc3fd621caf065d9f9
+    bytes: 719240
+  - id: nsfg-2011-2013-female-dat
+    title: NSFG 2011-2013 female respondent file, data, fixed-width text
+    kind: data
+    format: fixed-width
+    url: https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/NSFG/2011_2013_FemRespData.dat
+    path: data/raw/2011_2013_FemRespData.dat
+    releases:
+    - 2011-2013
+    redistribution: ship
+    acquisition: automated
+    fetched_on: '2026-11-20'
+    sha256: ae9b0a7eb8d816d01ddb2c2263c4d249d91102cfcae8fcbdbf8c0413c6c8415d
+    bytes: 27769758
+  - id: nsfg-2011-2013-male-sas
+    title: NSFG 2011-2013 male respondent file, SAS setup program (2011_2013_MaleSetup.sas)
+    kind: codebook
+    format: sas
+    url: https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/NSFG/sas/2011_2013_MaleSetup.sas
+    path: data/raw/sas/2011_2013_MaleSetup.sas
+    releases:
+    - 2011-2013
+    redistribution: ship
+    acquisition: automated
+    fetched_on: '2026-11-20'
+    sha256: bfa53305335fdf5a38ab55ba7b5dd5714103e03df01df49780bc4961a00a66d2
+    bytes: 580783
+  - id: nsfg-2011-2013-male-dat
+    title: NSFG 2011-2013 male respondent file, data, fixed-width text
+    kind: data
+    format: fixed-width
+    url: https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/NSFG/2011_2013_MaleData.dat
+    path: data/raw/2011_2013_MaleData.dat
+    releases:
+    - 2011-2013
+    redistribution: ship
+    acquisition: automated
+    fetched_on: '2026-11-20'
+    sha256: 9df68074ab360a889c5d0995ce35d7e38e8b0a09489d1f29562a00026e9f1d13
+    bytes: 22327155
+  - id: nsfg-2006-2010-female-sas
+    title: NSFG 2006-2010 female respondent file, SAS setup program (2006_2010_FemRespSetup.sas)
+    kind: codebook
+    format: sas
+    url: https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/NSFG/sas/2006_2010_FemRespSetup.sas
+    path: data/raw/sas/2006_2010_FemRespSetup.sas
+    releases:
+    - 2006-2010
+    redistribution: ship
+    acquisition: automated
+    fetched_on: '2026-11-20'
+    sha256: c7de854558a852eb7cc82e6a9a31dac7edcb7c77749fa24315b7dcad40c83e90
+    bytes: 661221
+  - id: nsfg-2006-2010-female-dat
+    title: NSFG 2006-2010 female respondent file, data, fixed-width text
+    kind: data
+    format: fixed-width
+    url: https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/NSFG/2006_2010_FemResp.dat
+    path: data/raw/2006_2010_FemResp.dat
+    releases:
+    - 2006-2010
+    redistribution: ship
+    acquisition: automated
+    fetched_on: '2026-11-20'
+    sha256: 8ef438f59afc6266c9d288142191b14ecb9bb72f965e60f592a2fa1c24b19174
+    bytes: 76780587
+  - id: nsfg-2006-2010-male-sas
+    title: NSFG 2006-2010 male respondent file, SAS setup program (2006_2010_MaleSetup.sas)
+    kind: codebook
+    format: sas
+    url: https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/NSFG/sas/2006_2010_MaleSetup.sas
+    path: data/raw/sas/2006_2010_MaleSetup.sas
+    releases:
+    - 2006-2010
+    redistribution: ship
+    acquisition: automated
+    fetched_on: '2026-11-20'
+    sha256: ba4ac67141dd31f0650979a7a437a5594e42a19aa2ee59633b058560fbb0ea24
+    bytes: 507611
+  - id: nsfg-2006-2010-male-dat
+    title: NSFG 2006-2010 male respondent file, data, fixed-width text
+    kind: data
+    format: fixed-width
+    url: https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/NSFG/2006_2010_Male.dat
+    path: data/raw/2006_2010_Male.dat
+    releases:
+    - 2006-2010
+    redistribution: ship
+    acquisition: automated
+    fetched_on: '2026-11-20'
+    sha256: fbb5d226b5493fd07a9f87ff917a779dbef42538aa764320ce39a0d7c5629426
+    bytes: 47281635
+  - id: nsfg-2002-female-sas-input
+    title: NSFG Cycle 6 female respondent file, SAS setup program (2002FemRespInput.sas)
+    kind: codebook
+    format: sas
+    url: https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/NSFG/sas/2002FemRespInput.sas
+    path: data/raw/sas/2002FemRespInput.sas
+    releases:
+    - '2002'
+    redistribution: ship
+    acquisition: automated
+    fetched_on: '2026-11-20'
+    sha256: 60a344d5f1a9eea52c5bfa6afc3c4a30c0fd736c53c5795dbf3699fb15ee1967
+    bytes: 80085
+  - id: nsfg-2002-female-sas-valuelabel
+    title: NSFG Cycle 6 female respondent file, SAS setup program (2002FemRespValueLabel.sas)
+    kind: codebook
+    format: sas
+    url: https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/NSFG/sas/2002FemRespValueLabel.sas
+    path: data/raw/sas/2002FemRespValueLabel.sas
+    releases:
+    - '2002'
+    redistribution: ship
+    acquisition: automated
+    fetched_on: '2026-11-20'
+    sha256: 2bc850b6a4d247fd1747709ad38cb3c0f366dfe8ab32d6fd151cfde1ab0e6772
+    bytes: 140331
+  - id: nsfg-2002-female-sas-varlabel
+    title: NSFG Cycle 6 female respondent file, SAS setup program (2002FemRespVarLabel.sas)
+    kind: codebook
+    format: sas
+    url: https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/NSFG/sas/2002FemRespVarLabel.sas
+    path: data/raw/sas/2002FemRespVarLabel.sas
+    releases:
+    - '2002'
+    redistribution: ship
+    acquisition: automated
+    fetched_on: '2026-11-20'
+    sha256: 4b26d227de3f7fa5af7bfea1479d3c6de8a6d2fd4c6c2c4710581a76b2fedbfe
+    bytes: 224816
+  - id: nsfg-2002-female-dat
+    title: NSFG Cycle 6 female respondent file, data, fixed-width text
+    kind: data
+    format: fixed-width
+    url: https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/NSFG/2002FemResp.dat
+    path: data/raw/2002FemResp.dat
+    releases:
+    - '2002'
+    redistribution: ship
+    acquisition: automated
+    fetched_on: '2026-11-20'
+    sha256: d63bc94891ebd58072ee01017c4693b5d7150cf85aa79bc9d365a6e8dd328d5d
+    bytes: 37664704
+  - id: nsfg-2002-male-sas-input
+    title: NSFG Cycle 6 male respondent file, SAS setup program (2002MaleInput.sas)
+    kind: codebook
+    format: sas
+    url: https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/NSFG/sas/2002MaleInput.sas
+    path: data/raw/sas/2002MaleInput.sas
+    releases:
+    - '2002'
+    redistribution: ship
+    acquisition: automated
+    fetched_on: '2026-11-20'
+    sha256: 491ecec224d4710c8df15a4e6c9d386a524f1a98023ef5bcf3a9668839b6863c
+    bytes: 51656
+  - id: nsfg-2002-male-sas-valuelabel
+    title: NSFG Cycle 6 male respondent file, SAS setup program (2002MaleValueLabel.sas)
+    kind: codebook
+    format: sas
+    url: https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/NSFG/sas/2002MaleValueLabel.sas
+    path: data/raw/sas/2002MaleValueLabel.sas
+    releases:
+    - '2002'
+    redistribution: ship
+    acquisition: automated
+    fetched_on: '2026-11-20'
+    sha256: 58f51444b7515182e63233a5139955ce6feb09fa85cb14e681647f52e42e433a
+    bytes: 101769
+  - id: nsfg-2002-male-sas-varlabel
+    title: NSFG Cycle 6 male respondent file, SAS setup program (2002MaleVarLabel.sas)
+    kind: codebook
+    format: sas
+    url: https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/NSFG/sas/2002MaleVarLabel.sas
+    path: data/raw/sas/2002MaleVarLabel.sas
+    releases:
+    - '2002'
+    redistribution: ship
+    acquisition: automated
+    fetched_on: '2026-11-20'
+    sha256: 902931f21d5bc47d40792a0274829e0b4f9b52448daa243484011dd72178e0d0
+    bytes: 163994
+  - id: nsfg-2002-male-dat
+    title: NSFG Cycle 6 male respondent file, data, fixed-width text
+    kind: data
+    format: fixed-width
+    url: https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/NSFG/2002Male.dat
+    path: data/raw/2002Male.dat
+    releases:
+    - '2002'
+    redistribution: ship
+    acquisition: automated
+    fetched_on: '2026-11-20'
+    sha256: b750a716889105738f2f314b98fa016df008dc4b585bff24962b441d7e61f248
+    bytes: 14719936
+  - id: nsfg-1995-female-sas
+    title: NSFG Cycle 5 female respondent file, SAS setup program (1995FemRespSetup.sas)
+    kind: codebook
+    format: sas
+    url: https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/NSFG/sas/1995FemRespSetup.sas
+    path: data/raw/sas/1995FemRespSetup.sas
+    releases:
+    - '1995'
+    redistribution: ship
+    acquisition: automated
+    fetched_on: '2026-11-20'
+    sha256: 0235b7aa7de4465e85415a3d91f3206b8a18c3124e1d3947b6913c8dcc2aedb5
+    bytes: 1483811
+  - id: nsfg-1995-female-dat
+    title: NSFG Cycle 5 female respondent file, data, fixed-width text
+    kind: data
+    format: fixed-width
+    url: https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/NSFG/1995FemRespData.dat
+    path: data/raw/1995FemRespData.dat
+    releases:
+    - '1995'
+    redistribution: ship
+    acquisition: automated
+    fetched_on: '2026-11-20'
+    sha256: 700bf310d51e975f3b465842d0cd5ed7b9b7c8ac4ab579ef6ec3e5c9d0cfa56d
+    bytes: 141726902
+  - id: nsfg-1988-female-sas
+    title: NSFG Cycle 4 female respondent file, SAS setup program (1988FemRespSetup.sas)
+    kind: codebook
+    format: sas
+    url: https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/NSFG/sas/1988FemRespSetup.sas
+    path: data/raw/sas/1988FemRespSetup.sas
+    releases:
+    - '1988'
+    redistribution: ship
+    acquisition: automated
+    fetched_on: '2026-11-20'
+    sha256: 8214197672bd533ea61d9f2d381bbe13c21e9e12568e4f8730dc2e6956ac4c2e
+    bytes: 612193
+  - id: nsfg-1988-female-dat
+    title: NSFG Cycle 4 female respondent file, data, fixed-width text
+    kind: data
+    format: fixed-width
+    url: https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/NSFG/1988FemRespData.dat
+    path: data/raw/1988FemRespData.dat
+    releases:
+    - '1988'
+    redistribution: ship
+    acquisition: automated
+    fetched_on: '2026-11-20'
+    sha256: 04e06e5c84a3a959f4b12a2ee3e974dc56e997da70a9b179fda71b9f6f331756
+    bytes: 30022850
+    note: 'No line breaks: fixed 3,553-byte records (the setup program''s recfm=f lrecl=3553).'
+  - id: nsfg-1982-female-sas
+    title: NSFG Cycle 3 female respondent file, SAS setup program (1982FemRespSetup.sas)
+    kind: codebook
+    format: sas
+    url: https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/NSFG/sas/1982FemRespSetup.sas
+    path: data/raw/sas/1982FemRespSetup.sas
+    releases:
+    - '1982'
+    redistribution: ship
+    acquisition: automated
+    fetched_on: '2026-11-20'
+    sha256: 6a27ca4d9e9930c81705ef258e99cab7d6a335c5e8d9e746416aa2d89e061caa
+    bytes: 362083
+  - id: nsfg-1982-female-dat
+    title: NSFG Cycle 3 female respondent file, data, fixed-width text
+    kind: data
+    format: fixed-width
+    url: https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/NSFG/1982NSFGData.dat
+    path: data/raw/1982NSFGData.dat
+    releases:
+    - '1982'
+    redistribution: ship
+    acquisition: automated
+    fetched_on: '2026-11-20'
+    sha256: 056be91d9ad52c8cdad7ba5b2b790304c02141c6a351798b8be53983295d1a69
+    bytes: 32648974
+    note: Holds several record types; respondents are rec_type 0 (columns 1499-1500), as the setup program reads it.
+  - id: nsfg-2017-2019-female-codebook-d
+    title: 2017-2019 NSFG female respondent file codebook, Section D
+    kind: codebook
+    format: pdf
+    url: https://www.cdc.gov/nchs/data/nsfg/2017-2019_NSFG_FemResp_SectionD_Codebook-508.pdf
+    path: data/raw/cdc/2017-2019_NSFG_FemResp_SectionD_Codebook-508.pdf
+    releases:
+    - 2017-2019
+    redistribution: ship
+    acquisition: automated
+    fetched_on: '2026-11-20'
+    sha256: 5c4ebcaa0cdb8dd0007368eefc49d6db6e42572f3ea538babc7d7c496240a2f8
+    bytes: 625754
+    convert: pdftotext -layout (poppler 24.02)
+  - id: nsfg-2017-2019-female-codebook-g
+    title: 2017-2019 NSFG female respondent file codebook, Section G
+    kind: codebook
+    format: pdf
+    url: https://www.cdc.gov/nchs/data/nsfg/2017-2019_NSFG_FemResp_SectionG_Codebook-508.pdf
+    path: data/raw/cdc/2017-2019_NSFG_FemResp_SectionG_Codebook-508.pdf
+    releases:
+    - 2017-2019
+    redistribution: ship
+    acquisition: automated
+    fetched_on: '2026-11-20'
+    sha256: 5b12f9955de4565bc1c387361f4d468bb3a2877b60ee0995b7ff4e807be64124
+    bytes: 170565
+    convert: pdftotext -layout (poppler 24.02)
+  - id: nsfg-2017-2019-male-codebook-b
+    title: 2017-2019 NSFG male respondent file codebook, Section B
+    kind: codebook
+    format: pdf
+    url: https://www.cdc.gov/nchs/data/nsfg/2017-2019_NSFG_Male_SectionB_Codebook-508.pdf
+    path: data/raw/cdc/2017-2019_NSFG_Male_SectionB_Codebook-508.pdf
+    releases:
+    - 2017-2019
+    redistribution: ship
+    acquisition: automated
+    fetched_on: '2026-11-20'
+    sha256: 9acca2b4f10b582c26ab520c25214ffe5bb951f65bc942c0d8bcb6f7564abb1b
+    bytes: 1081958
+    convert: pdftotext -layout (poppler 24.02)
+  - id: nsfg-2017-2019-male-codebook-f
+    title: 2017-2019 NSFG male respondent file codebook, Section F
+    kind: codebook
+    format: pdf
+    url: https://www.cdc.gov/nchs/data/nsfg/2017-2019_NSFG_Male_SectionF_Codebook-508.pdf
+    path: data/raw/cdc/2017-2019_NSFG_Male_SectionF_Codebook-508.pdf
+    releases:
+    - 2017-2019
+    redistribution: ship
+    acquisition: automated
+    fetched_on: '2026-11-20'
+    sha256: ab30276a19f5be7c483c4a13bf1fb4ec6798681aae84c590b2d22639024e7b90
+    bytes: 3390393
+    convert: pdftotext -layout (poppler 24.02)
+  - id: nsfg-2017-2019-male-codebook-h
+    title: 2017-2019 NSFG male respondent file codebook, Section H
+    kind: codebook
+    format: pdf
+    url: https://www.cdc.gov/nchs/data/nsfg/2017-2019_NSFG_Male_SectionH_Codebook-508.pdf
+    path: data/raw/cdc/2017-2019_NSFG_Male_SectionH_Codebook-508.pdf
+    releases:
+    - 2017-2019
+    redistribution: ship
+    acquisition: automated
+    fetched_on: '2026-11-20'
+    sha256: e21f47c9b94dced56df67414f3dd1bf0bf5fed4f57f6d3e594b6a27458b66cd9
+    bytes: 419620
+    convert: pdftotext -layout (poppler 24.02)

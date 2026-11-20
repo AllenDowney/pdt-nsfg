@@ -85,11 +85,11 @@ releases:
         all three tables.
     sources: [nsfg-2017-2019-female-codebook-screener, nsfg-2017-2019-female-codebook-a,
               nsfg-2017-2019-female-codebook-c, nsfg-2017-2019-female-codebook-i,
-              nsfg-2017-2019-female-codebook-j, nsfg-2017-2019-female-codebook-recodes,
+              nsfg-2017-2019-female-codebook-j, nsfg-2017-2019-female-codebook-d, nsfg-2017-2019-female-codebook-g, nsfg-2017-2019-female-codebook-recodes,
               nsfg-2017-2019-female-codebook-weights, nsfg-2017-2019-female-dat, nsfg-2017-2019-female-dct,
               nsfg-2017-2019-male-codebook-screener, nsfg-2017-2019-male-codebook-a,
               nsfg-2017-2019-male-codebook-j, nsfg-2017-2019-male-codebook-k,
-              nsfg-2017-2019-male-codebook-recodes, nsfg-2017-2019-male-codebook-weights,
+              nsfg-2017-2019-male-codebook-b, nsfg-2017-2019-male-codebook-f, nsfg-2017-2019-male-codebook-h, nsfg-2017-2019-male-codebook-recodes, nsfg-2017-2019-male-codebook-weights,
               nsfg-2017-2019-male-dat, nsfg-2017-2019-male-dct,
               nsfg-2017-2019-pregnancy-codebook, nsfg-2017-2019-pregnancy-dat, nsfg-2017-2019-pregnancy-dct]
     tables:
@@ -97,14 +97,14 @@ releases:
         label: Female respondents
         sources: [nsfg-2017-2019-female-codebook-screener, nsfg-2017-2019-female-codebook-a,
                   nsfg-2017-2019-female-codebook-c, nsfg-2017-2019-female-codebook-i,
-                  nsfg-2017-2019-female-codebook-j, nsfg-2017-2019-female-codebook-recodes,
+                  nsfg-2017-2019-female-codebook-j, nsfg-2017-2019-female-codebook-d, nsfg-2017-2019-female-codebook-g, nsfg-2017-2019-female-codebook-recodes,
                   nsfg-2017-2019-female-codebook-weights, nsfg-2017-2019-female-dat, nsfg-2017-2019-female-dct]
         key: [CASEID]
       - id: male
         label: Male respondents
         sources: [nsfg-2017-2019-male-codebook-screener, nsfg-2017-2019-male-codebook-a,
                   nsfg-2017-2019-male-codebook-j, nsfg-2017-2019-male-codebook-k,
-                  nsfg-2017-2019-male-codebook-recodes, nsfg-2017-2019-male-codebook-weights,
+                  nsfg-2017-2019-male-codebook-b, nsfg-2017-2019-male-codebook-f, nsfg-2017-2019-male-codebook-h, nsfg-2017-2019-male-codebook-recodes, nsfg-2017-2019-male-codebook-weights,
                   nsfg-2017-2019-male-dat, nsfg-2017-2019-male-dct]
         key: [CASEID]
       - id: pregnancy
@@ -114,3 +114,230 @@ releases:
         references:
           - columns: [CASEID]
             table: female
+  - id: 2015-2017
+    label: NSFG 2015-2017 public-use respondent files
+    status: current
+    sources:
+    - nsfg-2015-2017-female-sas
+    - nsfg-2015-2017-female-dat
+    - nsfg-2015-2017-male-sas
+    - nsfg-2015-2017-male-dat
+    tables:
+    - id: female
+      label: Female respondents
+      sources:
+      - nsfg-2015-2017-female-sas
+      - nsfg-2015-2017-female-dat
+      key:
+      - CASEID
+      design:
+        weights:
+        - WGT2015_2017
+        note: WGT2015_2017, the weight MarriageNSFG reads. This cycle's variance strata and PSUs aren't in this slice
+          yet.
+    - id: male
+      label: Male respondents
+      sources:
+      - nsfg-2015-2017-male-sas
+      - nsfg-2015-2017-male-dat
+      key:
+      - CASEID
+      design:
+        weights:
+        - WGT2015_2017
+        note: WGT2015_2017, the weight MarriageNSFG reads. This cycle's variance strata and PSUs aren't in this slice
+          yet.
+  - id: 2013-2015
+    label: NSFG 2013-2015 public-use respondent files
+    status: current
+    sources:
+    - nsfg-2013-2015-female-sas
+    - nsfg-2013-2015-female-dat
+    - nsfg-2013-2015-male-sas
+    - nsfg-2013-2015-male-dat
+    tables:
+    - id: female
+      label: Female respondents
+      sources:
+      - nsfg-2013-2015-female-sas
+      - nsfg-2013-2015-female-dat
+      key:
+      - CASEID
+      design:
+        weights:
+        - WGT2013_2015
+        note: WGT2013_2015, the weight MarriageNSFG reads. This cycle's variance strata and PSUs aren't in this slice
+          yet.
+    - id: male
+      label: Male respondents
+      sources:
+      - nsfg-2013-2015-male-sas
+      - nsfg-2013-2015-male-dat
+      key:
+      - CASEID
+      design:
+        weights:
+        - WGT2013_2015
+        note: WGT2013_2015, the weight MarriageNSFG reads. This cycle's variance strata and PSUs aren't in this slice
+          yet.
+  - id: 2011-2013
+    label: NSFG 2011-2013 public-use respondent files
+    status: current
+    sources:
+    - nsfg-2011-2013-female-sas
+    - nsfg-2011-2013-female-dat
+    - nsfg-2011-2013-male-sas
+    - nsfg-2011-2013-male-dat
+    tables:
+    - id: female
+      label: Female respondents
+      sources:
+      - nsfg-2011-2013-female-sas
+      - nsfg-2011-2013-female-dat
+      key:
+      - CASEID
+      design:
+        weights:
+        - WGT2011_2013
+        note: WGT2011_2013, the weight MarriageNSFG reads. This cycle's variance strata and PSUs aren't in this slice
+          yet.
+    - id: male
+      label: Male respondents
+      sources:
+      - nsfg-2011-2013-male-sas
+      - nsfg-2011-2013-male-dat
+      key:
+      - CASEID
+      design:
+        weights:
+        - WGT2011_2013
+        note: WGT2011_2013, the weight MarriageNSFG reads. This cycle's variance strata and PSUs aren't in this slice
+          yet.
+  - id: 2006-2010
+    label: NSFG 2006-2010 public-use respondent files
+    status: current
+    sources:
+    - nsfg-2006-2010-female-sas
+    - nsfg-2006-2010-female-dat
+    - nsfg-2006-2010-male-sas
+    - nsfg-2006-2010-male-dat
+    tables:
+    - id: female
+      label: Female respondents
+      sources:
+      - nsfg-2006-2010-female-sas
+      - nsfg-2006-2010-female-dat
+      key:
+      - CASEID
+      design:
+        weights:
+        - WGTQ1Q16
+        note: WGTQ1Q16, the weight MarriageNSFG reads. This cycle's variance strata and PSUs aren't in this slice
+          yet.
+    - id: male
+      label: Male respondents
+      sources:
+      - nsfg-2006-2010-male-sas
+      - nsfg-2006-2010-male-dat
+      key:
+      - CASEID
+      design:
+        weights:
+        - WGTQ1Q16
+        note: WGTQ1Q16, the weight MarriageNSFG reads. This cycle's variance strata and PSUs aren't in this slice
+          yet.
+  - id: '2002'
+    label: NSFG Cycle 6 (2002) public-use respondent files
+    status: current
+    sources:
+    - nsfg-2002-female-sas-input
+    - nsfg-2002-female-sas-valuelabel
+    - nsfg-2002-female-sas-varlabel
+    - nsfg-2002-female-dat
+    - nsfg-2002-male-sas-input
+    - nsfg-2002-male-sas-valuelabel
+    - nsfg-2002-male-sas-varlabel
+    - nsfg-2002-male-dat
+    tables:
+    - id: female
+      label: Female respondents
+      sources:
+      - nsfg-2002-female-sas-input
+      - nsfg-2002-female-sas-valuelabel
+      - nsfg-2002-female-sas-varlabel
+      - nsfg-2002-female-dat
+      key:
+      - CASEID
+      design:
+        weights:
+        - FINALWGT
+        note: FINALWGT, the weight MarriageNSFG reads. This cycle's variance strata and PSUs aren't in this slice
+          yet.
+    - id: male
+      label: Male respondents
+      sources:
+      - nsfg-2002-male-sas-input
+      - nsfg-2002-male-sas-valuelabel
+      - nsfg-2002-male-sas-varlabel
+      - nsfg-2002-male-dat
+      key:
+      - CASEID
+      design:
+        weights:
+        - FINALWGT
+        note: FINALWGT, the weight MarriageNSFG reads. This cycle's variance strata and PSUs aren't in this slice
+          yet.
+  - id: '1995'
+    label: NSFG Cycle 5 (1995) public-use respondent files
+    status: current
+    sources:
+    - nsfg-1995-female-sas
+    - nsfg-1995-female-dat
+    tables:
+    - id: female
+      label: Female respondents
+      sources:
+      - nsfg-1995-female-sas
+      - nsfg-1995-female-dat
+      key:
+      - CASEID
+      design:
+        weights:
+        - POST_WT
+        note: POST_WT, the weight MarriageNSFG reads. This cycle's variance strata and PSUs aren't in this slice yet.
+  - id: '1988'
+    label: NSFG Cycle 4 (1988) public-use respondent files
+    status: current
+    sources:
+    - nsfg-1988-female-sas
+    - nsfg-1988-female-dat
+    tables:
+    - id: female
+      label: Female respondents
+      sources:
+      - nsfg-1988-female-sas
+      - nsfg-1988-female-dat
+      key:
+      - CASEID
+      design:
+        weights:
+        - W5
+        note: W5, the weight MarriageNSFG reads. This cycle's variance strata and PSUs aren't in this slice yet.
+  - id: '1982'
+    label: NSFG Cycle 3 (1982) public-use respondent files
+    status: current
+    sources:
+    - nsfg-1982-female-sas
+    - nsfg-1982-female-dat
+    tables:
+    - id: female
+      label: Female respondents
+      sources:
+      - nsfg-1982-female-sas
+      - nsfg-1982-female-dat
+      key:
+      - CASEID
+      design:
+        weights:
+        - FINALWT
+        note: FINALWT, the weight MarriageNSFG reads. This cycle's variance strata and PSUs aren't in this slice yet.

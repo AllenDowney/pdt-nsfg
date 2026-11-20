@@ -18,6 +18,8 @@ releases:
           marital: [MARSTAT, LMARSTAT, EVRMARRY, FMARITAL, RMARITAL, FMARIT, RMARIT, SSMARCOH, CURRPRTS]
           religion: [RELIGION, ATTND14, RELDLIFE, ATTNDNOW]
           other: [POT12, SAMLIFENUM]
+          marriagensfg: [CMINTVW, AGER, PARITY, MARDAT01, MAREND01, MARDIS01, FMARNO, NCHILDHH, INTENT, ADDEXP,
+                         STRLOPER, TUBS, HYST, RWANT, FTFMODE]
       male:
         codebook: [{source: nsfg-male-codebook, path: 2022-2023-Male-Codebook.txt}]
         data: {source: nsfg-male-sas, path: NSFG-2022-2023-MaleRespPUFData.sas7bdat}
@@ -27,6 +29,8 @@ releases:
           marital: [MARSTAT, LMARSTAT, EVRMARRY, FMARITAL, RMARITAL]
           religion: [RELIGION, ATTND14, RELDLIFE, ATTNDNOW]
           other: [POT12, MFLASTP]
+          marriagensfg: [MARDAT01, CMINTVW, AGER, MAREND01, FMARNO, mar1diss, ADDEXP, INTENT, EVBIOKID, NUMBIOKID,
+                         EVEROPER, RWANT, FTFMODE]
       pregnancy:
         codebook: [{source: nsfg-pregnancy-codebook, path: 2022-2023-FemPreg-Codebook.txt}]
         data: {source: nsfg-pregnancy-sas, path: NSFG-2022-2023-FemPregPUFData.sas7bdat}
@@ -51,6 +55,8 @@ releases:
           - {source: nsfg-2017-2019-female-codebook-c, path: cdc/2017-2019_NSFG_FemResp_SectionC_Codebook-508.txt}
           - {source: nsfg-2017-2019-female-codebook-i, path: cdc/2017-2019_NSFG_FemResp_SectionI_Codebook-508.txt}
           - {source: nsfg-2017-2019-female-codebook-j, path: cdc/2017-2019_NSFG_FemResp_SectionJ_Codebook-508.txt}
+          - {source: nsfg-2017-2019-female-codebook-d, path: cdc/2017-2019_NSFG_FemResp_SectionD_Codebook-508.txt}
+          - {source: nsfg-2017-2019-female-codebook-g, path: cdc/2017-2019_NSFG_FemResp_SectionG_Codebook-508.txt}
           - {source: nsfg-2017-2019-female-codebook-recodes, path: cdc/2017-2019_NSFG_FemResp_SectionRecodes_Codebook-508.txt}
           - {source: nsfg-2017-2019-female-codebook-weights, path: cdc/2017-2019_NSFG_FemResp_SectionWeights_Codebook-508.txt}
         data: {source: nsfg-2017-2019-female-dat, path: 2017_2019_FemRespData.dat,
@@ -60,12 +66,17 @@ releases:
           marital: [MARSTAT, EVRMARRY, FMARITAL, RMARITAL, FMARIT, CURRPRTS]
           religion: [RELIGION, ATTND14, RELDLIFE, ATTNDNOW]
           other: [POT12, SAMLIFENUM]
+          marriagensfg: [CMINTVW, AGER, PARITY, MARDAT01, MAREND01, MARDIS01, FMARNO, NCHILDHH, INTENT, ADDEXP,
+                         AGEBABY1, STRLOPER, TUBS, HYST, RWANT]
       male:
         codebook:
           - {source: nsfg-2017-2019-male-codebook-screener, path: cdc/2017-2019_NSFG_Male_Screener_Codebook-508.txt}
           - {source: nsfg-2017-2019-male-codebook-a, path: cdc/2017-2019_NSFG_Male_SectionA_Codebook-508.txt}
           - {source: nsfg-2017-2019-male-codebook-j, path: cdc/2017-2019_NSFG_Male_SectionJ_Codebook-508.txt}
           - {source: nsfg-2017-2019-male-codebook-k, path: cdc/2017-2019_NSFG_Male_SectionK_Codebook-508.txt}
+          - {source: nsfg-2017-2019-male-codebook-b, path: cdc/2017-2019_NSFG_Male_SectionB_Codebook-508.txt}
+          - {source: nsfg-2017-2019-male-codebook-f, path: cdc/2017-2019_NSFG_Male_SectionF_Codebook-508.txt}
+          - {source: nsfg-2017-2019-male-codebook-h, path: cdc/2017-2019_NSFG_Male_SectionH_Codebook-508.txt}
           - {source: nsfg-2017-2019-male-codebook-recodes, path: cdc/2017-2019_NSFG_Male_SectionRecodes_Codebook-508.txt}
           - {source: nsfg-2017-2019-male-codebook-weights, path: cdc/2017-2019_NSFG_Male_SectionWeights_Codebook-508.txt}
         data: {source: nsfg-2017-2019-male-dat, path: 2017_2019_MaleData.dat,
@@ -75,6 +86,7 @@ releases:
           marital: [MARSTAT, EVRMARRY, FMARITAL, RMARITAL]
           religion: [RELIGION, ATTND14, RELDLIFE, ATTNDNOW]
           other: [POT12, MFLASTP]
+          marriagensfg: [MARDAT01, CMINTVW, AGER, MAREND01, FMARNO, MAR1DISS, ADDEXP, INTENT, BIOKIDS, EVEROPER, RWANT]
       pregnancy:
         codebook:
           - {source: nsfg-2017-2019-pregnancy-codebook, path: cdc/2017-2019_NSFG_FemPregFile_Codebook-508.txt}
@@ -85,15 +97,130 @@ releases:
           outcome: [OUTCOME, OUTCOME_I, BIRTHORD, AGEPREG, PMARPREG]
           design: [WGT2017_2019, SECU, SEST, RELIGION]
 
+  # Earlier cycles (PublicDataToolkit Task 75): every variable MarriageNSFG reads, documented by
+  # NCHS's SAS setup programs (layout, variable labels, value labels; build/sas_setup.py). No question
+  # text. Names as the setup programs write them.
+  "2015-2017":
+    author: Claude (PublicDataToolkit Task 75)
+    date: "2026-11-20"
+    codebook_format: sas_setup
+    tables:
+      female:
+        codebook: [{source: nsfg-2015-2017-female-sas, path: sas/2015_2017_FemRespSetup.sas}]
+        data: {source: nsfg-2015-2017-female-dat, path: 2015_2017_FemRespData.dat}
+        variables:
+          marriagensfg: [CASEID, CMINTVW, AGER, EVRMARRY, PARITY, WGT2015_2017, MARDAT01, MAREND01, MARDIS01, RMARITAL, FMARITAL, FMARNO, NCHILDHH, INTENT, ADDEXP, AGEBABY1, STRLOPER, TUBS, HYST, RWANT, HIEDUC]
+      male:
+        codebook: [{source: nsfg-2015-2017-male-sas, path: sas/2015_2017_MaleSetup.sas}]
+        data: {source: nsfg-2015-2017-male-dat, path: 2015_2017_MaleData.dat}
+        variables:
+          marriagensfg: [CASEID, MARDAT01, CMINTVW, AGER, EVRMARRY, WGT2015_2017, MAREND01, RMARITAL, FMARITAL, FMARNO, MAR1DISS, ADDEXP, INTENT, BIOKIDS, EVEROPER, RWANT, HIEDUC]
+  "2013-2015":
+    author: Claude (PublicDataToolkit Task 75)
+    date: "2026-11-20"
+    codebook_format: sas_setup
+    tables:
+      female:
+        codebook: [{source: nsfg-2013-2015-female-sas, path: sas/2013_2015_FemRespSetup.sas}]
+        data: {source: nsfg-2013-2015-female-dat, path: 2013_2015_FemRespData.dat}
+        variables:
+          marriagensfg: [CASEID, CMMARRHX, CMDIVORCX, CMBIRTH, CMINTVW, EVRMARRY, PARITY, WGT2013_2015, MARDAT01, MAREND01, MARDIS01, RMARITAL, FMARITAL, FMARNO, MAR1DISS, NCHILDHH, INTENT, ADDEXP, AGEBABY1, STRLOPER, TUBS, HYST, RWANT, HIEDUC]
+      male:
+        codebook: [{source: nsfg-2013-2015-male-sas, path: sas/2013_2015_MaleSetup.sas}]
+        data: {source: nsfg-2013-2015-male-dat, path: 2013_2015_MaleData.dat}
+        variables:
+          marriagensfg: [CASEID, MARDAT01, CMDIVW, CMBIRTH, CMINTVW, EVRMARRY, WGT2013_2015, MAREND01, RMARITAL, FMARITAL, FMARNO, MAR1DISS, ADDEXP, INTENT, BIOKIDS, EVEROPER, RWANT, HIEDUC]
+  "2011-2013":
+    author: Claude (PublicDataToolkit Task 75)
+    date: "2026-11-20"
+    codebook_format: sas_setup
+    tables:
+      female:
+        codebook: [{source: nsfg-2011-2013-female-sas, path: sas/2011_2013_FemRespSetup.sas}]
+        data: {source: nsfg-2011-2013-female-dat, path: 2011_2013_FemRespData.dat}
+        variables:
+          marriagensfg: [CASEID, CMMARRHX, CMDIVORCX, CMBIRTH, CMINTVW, EVRMARRY, PARITY, WGT2011_2013, MARDAT01, MAREND01, MARDIS01, RMARITAL, FMARITAL, FMARNO, MAR1DISS, NCHILDHH, INTENT, ADDEXP, AGEBABY1, STRLOPER, TUBS, HYST, RWANT, HIEDUC]
+      male:
+        codebook: [{source: nsfg-2011-2013-male-sas, path: sas/2011_2013_MaleSetup.sas}]
+        data: {source: nsfg-2011-2013-male-dat, path: 2011_2013_MaleData.dat}
+        variables:
+          marriagensfg: [CASEID, MARDAT01, CMDIVW, CMBIRTH, CMINTVW, EVRMARRY, WGT2011_2013, MAREND01, RMARITAL, FMARITAL, FMARNO, MAR1DISS, ADDEXP, INTENT, BIOKIDS, EVEROPER, RWANT, HIEDUC]
+  "2006-2010":
+    author: Claude (PublicDataToolkit Task 75)
+    date: "2026-11-20"
+    codebook_format: sas_setup
+    tables:
+      female:
+        codebook: [{source: nsfg-2006-2010-female-sas, path: sas/2006_2010_FemRespSetup.sas}]
+        data: {source: nsfg-2006-2010-female-dat, path: 2006_2010_FemResp.dat}
+        variables:
+          marriagensfg: [CASEID, CMMARRHX, CMDIVORCX, CMBIRTH, CMINTVW, EVRMARRY, PARITY, WGTQ1Q16, MARDAT01, MAREND01, MARDIS01, RMARITAL, FMARITAL, FMARNO, MAR1DISS, NCHILDHH, INTENT, ADDEXP, AGEBABY1, STRLOPER, TUBS, HYST, RWANT, HIEDUC, DEGREES]
+      male:
+        codebook: [{source: nsfg-2006-2010-male-sas, path: sas/2006_2010_MaleSetup.sas}]
+        data: {source: nsfg-2006-2010-male-dat, path: 2006_2010_Male.dat}
+        variables:
+          marriagensfg: [CASEID, MARDAT01, CMDIVW, CMBIRTH, CMINTVW, EVRMARRY, WGTQ1Q16, MAREND01, RMARITAL, FMARITAL, FMARNO, MAR1DISS, ADDEXP, INTENT, EVRCHIL, EVRCHILN, EVEROPER, RWANT, HIEDUC]
+  "2002":
+    author: Claude (PublicDataToolkit Task 75)
+    date: "2026-11-20"
+    codebook_format: sas_setup
+    tables:
+      female:
+        codebook: [{source: nsfg-2002-female-sas-input, path: sas/2002FemRespInput.sas}, {source: nsfg-2002-female-sas-valuelabel, path: sas/2002FemRespValueLabel.sas}, {source: nsfg-2002-female-sas-varlabel, path: sas/2002FemRespVarLabel.sas}]
+        data: {source: nsfg-2002-female-dat, path: 2002FemResp.dat}
+        variables:
+          marriagensfg: [CASEID, CMMARRHX, CMDIVORCX, CMBIRTH, CMINTVW, EVRMARRY, PARITY, FINALWGT, MARDAT01, MAREND01, MARDIS01, RMARITAL, FMARITAL, FMARNO, MAR1DISS, INTENT, ADDEXP, AGEBABY1, STRLOPER, TUBS, HYST, RWANT, HIEDUC, HAVEDEG, DEGREES]
+      male:
+        codebook: [{source: nsfg-2002-male-sas-input, path: sas/2002MaleInput.sas}, {source: nsfg-2002-male-sas-valuelabel, path: sas/2002MaleValueLabel.sas}, {source: nsfg-2002-male-sas-varlabel, path: sas/2002MaleVarLabel.sas}]
+        data: {source: nsfg-2002-male-dat, path: 2002Male.dat}
+        variables:
+          marriagensfg: [CASEID, MARDAT01, CMDIVW, CMBIRTH, CMINTVW, EVRMARRY, FINALWGT, FMARITAL, TIMESMAR, MARREND4, RMARITAL, ADDEXP, INTENT, EVRCHIL, EVRCHILN, EVEROPER, RWANT, HIEDUC]
+  "1995":
+    author: Claude (PublicDataToolkit Task 75)
+    date: "2026-11-20"
+    codebook_format: sas_setup
+    tables:
+      female:
+        codebook: [{source: nsfg-1995-female-sas, path: sas/1995FemRespSetup.sas}]
+        data: {source: nsfg-1995-female-dat, path: 1995FemRespData.dat}
+        variables:
+          marriagensfg: [CASEID, A_DOI, TIMESMAR, MARDAT01, BDAYCENM, POST_WT, MAREND01, DIVDATH1, WNSTPH1, MARSTAT, FMARNO, RMARITAL, PARITY, INTENT, ADDEXP, AGEBABY1, STEROPEV, HIEDUC, FMARITAL, HIDEGREE]
+  "1988":
+    author: Claude (PublicDataToolkit Task 75)
+    date: "2026-11-20"
+    codebook_format: sas_setup
+    tables:
+      female:
+        codebook: [{source: nsfg-1988-female-sas, path: sas/1988FemRespSetup.sas}]
+        data: {source: nsfg-1988-female-dat, path: 1988FemRespData.dat}
+        variables:
+          marriagensfg: [CASEID, W5, A_5, F15MO, F19M1MO, QDICMO, A_3, F23M1, F26M1MO, F27M1MO, FMARNO, RMARITAL, PARITY, INTENT, ADDEXP, AGEBABY1, STRLOPER, WANTKID2, EDUCAT, FMARITAL]
+  "1982":
+    author: Claude (PublicDataToolkit Task 75)
+    date: "2026-11-20"
+    codebook_format: sas_setup
+    tables:
+      female:
+        codebook: [{source: nsfg-1982-female-sas, path: sas/1982FemRespSetup.sas}]
+        data: {source: nsfg-1982-female-dat, path: 1982NSFGData.dat}
+        # Hand-checked layout fixes (origin hand, Claude, PublicDataToolkit Task 75, 2026-11-20).
+        # The setup program gives F22_1CM as columns 622-628, which overlaps F21_1CM (619-622). In the
+        # data (rec_type 0) its four-digit codes (9797, 9898, 9999, and century months like 0990) are in
+        # 625-628; 623-624 hold two digits only where F21_1CM is filled, and no variable is assigned there.
+        layout_fixes:
+          F22_1CM: {start: 625, end: 628, was: "622-628"}
+        variables:
+          marriagensfg: [CASEID, FINALWT, AGE, MAR2P, FMAR1MO, FMARITAL, R7_CM, CMBIRTH, F18_1, F21_1CM, F22_1CM, FMARNO, MARITAL, PARITY, INTENT, ADDEXP, AGEBABY1, STRLOPER, WANTKID2, EDUCAT]
+
 # By name, ignoring case; the same for every release.
 measure:
   identifier: [CaseID, PREGORDR]
-  weight: [WGT2022_2023, WGT2017_2019]
-  continuous: [AGE_R, RSCRAGE, agepreg, BIRTHWGT]
-  count: [SAMLIFENUM, CURRPRTS, BIRTHORD]
-  ordinal: [HIEDUC, ATTND14, RELDLIFE, ATTNDNOW, POT12]
+  weight: [WGT2022_2023, WGT2017_2019, FINALWT, W5, POST_WT, FINALWGT, WGTQ1Q16, WGT2011_2013, WGT2013_2015, WGT2015_2017]
+  continuous: [AGE_R, RSCRAGE, agepreg, BIRTHWGT, AGE, A_5, AGER, MAR2P, AGEBABY1, ADDEXP, FMAR1MO, R7_CM, CMBIRTH, F21_1CM, F22_1CM, F15MO, F19M1MO, QDICMO, A_3, F26M1MO, F27M1MO, A_DOI, MARDAT01, BDAYCENM, DIVDATH1, WNSTPH1, CMMARRHX, CMDIVORCX, CMINTVW, MARDIS01, MAR1DISS, CMDIVW, NUMBIOKID]
+  count: [EDUCAT, SAMLIFENUM, CURRPRTS, BIRTHORD, FMARNO, PARITY, TIMESMAR, NCHILDHH, BIOKIDS, EVRCHILN]
+  ordinal: [HIEDUC, ATTND14, RELDLIFE, ATTNDNOW, POT12, HIDEGREE, DEGREES]
   categorical: [MFLASTP, VEST, VECL, SECU, SEST, HISPRACE2, HIEDUC_I, MARSTAT, LMARSTAT, EVRMARRY, FMARITAL, RMARITAL,
-                FMARIT, RMARIT, SSMARCOH, RELIGION, OUTCOME, OUTCOME_I, BABYSEX, pmarpreg]
+                FMARIT, RMARIT, SSMARCOH, RELIGION, OUTCOME, OUTCOME_I, BABYSEX, pmarpreg, MARITAL, F18_1, F23M1, MAREND01, MARREND4, INTENT, STRLOPER, STEROPEV, WANTKID2, TUBS, HYST, RWANT, HAVEDEG, EVRCHIL, EVEROPER, FTFMODE, EVBIOKID]
 
 # Links NCHS asserts in its "Summary of NSFG Questionnaire Changes for 2022-2023
 # (relative to 2017-2019 NSFG)" (source nsfg-2022-2023-quex-changes). Each names
